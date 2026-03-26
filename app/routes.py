@@ -1,4 +1,5 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
+import requests
 
 from .auth import login_required, role_required
 from .extensions import db
@@ -277,6 +278,34 @@ def integration():
             {"title": "Интеграция Bitrix24"},
         ],
     )
+
+
+@main_bp.route("/integration/check", methods=["POST"])
+@login_required
+def integration_check():
+    setting = IntegrationSetting.query.filter_by(service_name="bitrix24").first()
+
+    if setting is None or not setting.webhook_url:
+        flash("Сначала сохраните webhook URL для интеграции.", "error")
+        return redirect(url_for("main.integration"))
+
+    check_url = setting.webhook_url.rstrip("/") + "/profile.json"
+
+    try:
+        response = requests.get(check_url, timeout=10)
+        response.raise_for_status()
+        data = response.json()
+
+        if "result" in data:
+            flash("Подключение к Bitrix24 успешно проверено.", "success")
+        else:
+            flash("Bitrix24 ответил без ожидаемого результата.", "error")
+    except requests.RequestException:
+        flash("Не удалось подключиться к Bitrix24 по указанному webhook URL.", "error")
+    except ValueError:
+        flash("Bitrix24 вернул некорректный формат ответа.", "error")
+
+    return redirect(url_for("main.integration"))
 
 
 @main_bp.route("/dashboard")

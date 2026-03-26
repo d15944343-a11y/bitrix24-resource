@@ -18,7 +18,14 @@
             <span>Интеграция активна</span>
         </label>
 
-        <button class="button" type="submit">Сохранить настройки</button>
+        <div class="filter-actions">
+            <button class="button" type="submit">Сохранить настройки</button>
+            {% if setting %}
+            <button class="button button--secondary" type="submit" formaction="{{ url_for('main.integration_check') }}" formmethod="post">
+                Проверить подключение
+            </button>
+            {% endif %}
+        </div>
     </form>
 
     {% if setting %}
