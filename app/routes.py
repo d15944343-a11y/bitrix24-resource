@@ -1,5 +1,6 @@
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for
 
+from .auth import login_required, role_required
 from .models import User
 
 
@@ -81,6 +82,7 @@ def integration():
 
 
 @main_bp.route("/dashboard")
+@login_required
 def dashboard():
     return render_template(
         "dashboard.html",
@@ -92,6 +94,7 @@ def dashboard():
 
 
 @main_bp.route("/admin")
+@role_required("Администратор")
 def admin_panel():
     return render_template(
         "admin.html",
