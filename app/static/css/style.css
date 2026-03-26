@@ -204,6 +204,12 @@ body {
     background-color: #ffffff;
 }
 
+.table-link {
+    color: #0f4c81;
+    text-decoration: none;
+    font-weight: 600;
+}
+
 h1 {
     margin-bottom: 16px;
 }

@@ -123,6 +123,21 @@ def admin_roles():
     )
 
 
+@main_bp.route("/admin/users/<int:user_id>")
+@role_required("Администратор")
+def admin_user_detail(user_id: int):
+    user = User.query.get_or_404(user_id)
+    return render_template(
+        "admin_user_detail.html",
+        user=user,
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Панель администратора", "endpoint": "main.admin_panel"},
+            {"title": "Карточка пользователя"},
+        ],
+    )
+
+
 @main_bp.route("/recommendations")
 def recommendations():
     return render_template(
