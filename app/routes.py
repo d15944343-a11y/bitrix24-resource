@@ -1,4 +1,5 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
+
 from .auth import login_required, role_required
 from .extensions import db
 from .models import Client, FeedbackMessage, Role, User
@@ -9,10 +10,7 @@ main_bp = Blueprint("main", __name__)
 
 @main_bp.route("/")
 def index():
-    return render_template(
-        "index.html",
-        breadcrumbs=[{"title": "Главная"}],
-    )
+    return render_template("index.html", breadcrumbs=[{"title": "Главная"}])
 
 
 @main_bp.route("/about")
@@ -28,6 +26,8 @@ def about():
 
 @main_bp.route("/contacts", methods=["GET", "POST"])
 def contacts():
+    breadcrumbs = [{"title": "Контакты"}]
+
     if request.method == "POST":
         name = request.form.get("name", "").strip()
         email = request.form.get("email", "").strip().lower()
@@ -36,33 +36,16 @@ def contacts():
 
         if not all([name, email, subject, message]):
             flash("Заполните все поля формы обратной связи.", "error")
-            return render_template(
-                "contacts.html",
-                form_data=request.form,
-                breadcrumbs=[
-                    {"title": "Контакты"},
-                ],
-            )
+            return render_template("contacts.html", form_data=request.form, breadcrumbs=breadcrumbs)
 
-        feedback = FeedbackMessage(
-            name=name,
-            email=email,
-            subject=subject,
-            message=message,
-        )
+        feedback = FeedbackMessage(name=name, email=email, subject=subject, message=message)
         db.session.add(feedback)
         db.session.commit()
 
         flash("Сообщение отправлено и сохранено в системе.", "success")
         return redirect(url_for("main.contacts"))
 
-    return render_template(
-        "contacts.html",
-        form_data={},
-        breadcrumbs=[
-            {"title": "Контакты"},
-        ],
-    )
+    return render_template("contacts.html", form_data={}, breadcrumbs=breadcrumbs)
 
 
 @main_bp.route("/analytics")
@@ -109,8 +92,10 @@ def clients():
     if search:
         normalized_search = search.casefold()
         clients_list = [
-            client for client in clients_list
-            if normalized_search in client.full_name.casefold() or normalized_search in client.email.casefold()
+            client
+            for client in clients_list
+            if normalized_search in client.full_name.casefold()
+            or normalized_search in client.email.casefold()
         ]
 
     if status:
@@ -134,6 +119,12 @@ def clients():
 @main_bp.route("/clients/create", methods=["GET", "POST"])
 @login_required
 def client_create():
+    breadcrumbs = [
+        {"title": "Главная", "endpoint": "main.index"},
+        {"title": "Клиенты", "endpoint": "main.clients"},
+        {"title": "Новый клиент"},
+    ]
+
     if request.method == "POST":
         full_name = request.form.get("full_name", "").strip()
         email = request.form.get("email", "").strip().lower()
@@ -143,51 +134,21 @@ def client_create():
 
         if not all([full_name, email, phone, city, status]):
             flash("Заполните все поля формы.", "error")
-            return render_template(
-                "client_create.html",
-                form_data=request.form,
-                breadcrumbs=[
-                    {"title": "Главная", "endpoint": "main.index"},
-                    {"title": "Клиенты", "endpoint": "main.clients"},
-                    {"title": "Новый клиент"},
-                ],
-            )
+            return render_template("client_create.html", form_data=request.form, breadcrumbs=breadcrumbs)
 
         existing_client = Client.query.filter_by(email=email).first()
         if existing_client is not None:
             flash("Клиент с таким email уже существует.", "error")
-            return render_template(
-                "client_create.html",
-                form_data=request.form,
-                breadcrumbs=[
-                    {"title": "Главная", "endpoint": "main.index"},
-                    {"title": "Клиенты", "endpoint": "main.clients"},
-                    {"title": "Новый клиент"},
-                ],
-            )
+            return render_template("client_create.html", form_data=request.form, breadcrumbs=breadcrumbs)
 
-        client = Client(
-            full_name=full_name,
-            email=email,
-            phone=phone,
-            city=city,
-            status=status,
-        )
+        client = Client(full_name=full_name, email=email, phone=phone, city=city, status=status)
         db.session.add(client)
         db.session.commit()
 
         flash("Клиент успешно добавлен.", "success")
         return redirect(url_for("main.client_detail", client_id=client.id))
 
-    return render_template(
-        "client_create.html",
-        form_data={},
-        breadcrumbs=[
-            {"title": "Главная", "endpoint": "main.index"},
-            {"title": "Клиенты", "endpoint": "main.clients"},
-            {"title": "Новый клиент"},
-        ],
-    )
+    return render_template("client_create.html", form_data={}, breadcrumbs=breadcrumbs)
 
 
 @main_bp.route("/clients/<int:client_id>")
@@ -209,6 +170,12 @@ def client_detail(client_id: int):
 @login_required
 def client_edit(client_id: int):
     client = Client.query.get_or_404(client_id)
+    breadcrumbs = [
+        {"title": "Главная", "endpoint": "main.index"},
+        {"title": "Клиенты", "endpoint": "main.clients"},
+        {"title": "Карточка клиента", "endpoint": "main.client_detail", "params": {"client_id": client.id}},
+        {"title": "Редактирование"},
+    ]
 
     if request.method == "POST":
         full_name = request.form.get("full_name", "").strip()
@@ -216,13 +183,6 @@ def client_edit(client_id: int):
         phone = request.form.get("phone", "").strip()
         city = request.form.get("city", "").strip()
         status = request.form.get("status", "").strip()
-
-        breadcrumbs = [
-            {"title": "Главная", "endpoint": "main.index"},
-            {"title": "Клиенты", "endpoint": "main.clients"},
-            {"title": "Карточка клиента", "endpoint": "main.client_detail", "params": {"client_id": client.id}},
-            {"title": "Редактирование"},
-        ]
 
         if not all([full_name, email, phone, city, status]):
             flash("Заполните все поля формы.", "error")
@@ -252,12 +212,7 @@ def client_edit(client_id: int):
             "city": client.city,
             "status": client.status,
         },
-        breadcrumbs=[
-            {"title": "Главная", "endpoint": "main.index"},
-            {"title": "Клиенты", "endpoint": "main.clients"},
-            {"title": "Карточка клиента", "endpoint": "main.client_detail", "params": {"client_id": client.id}},
-            {"title": "Редактирование"},
-        ],
+        breadcrumbs=breadcrumbs,
     )
 
 
@@ -323,6 +278,21 @@ def admin_roles():
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Панель администратора", "endpoint": "main.admin_panel"},
             {"title": "Роли"},
+        ],
+    )
+
+
+@main_bp.route("/admin/feedback")
+@role_required("Администратор")
+def admin_feedback():
+    messages = FeedbackMessage.query.order_by(FeedbackMessage.id.desc()).all()
+    return render_template(
+        "admin_feedback.html",
+        messages=messages,
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Панель администратора", "endpoint": "main.admin_panel"},
+            {"title": "Обращения"},
         ],
     )
 

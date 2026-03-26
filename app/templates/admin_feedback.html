@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Обращения | {{ config.APP_NAME }}{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Обращения обратной связи</h1>
+    <p>Список сообщений, отправленных через форму обратной связи.</p>
+
+    <div class="section-actions">
+        <a class="button button--secondary" href="{{ url_for('main.admin_panel') }}">Вернуться в админ-панель</a>
+    </div>
+
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Имя</th>
+                    <th>Email</th>
+                    <th>Тема</th>
+                    <th>Сообщение</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for message in messages %}
+                <tr>
+                    <td>{{ message.id }}</td>
+                    <td>{{ message.name }}</td>
+                    <td>{{ message.email }}</td>
+                    <td>{{ message.subject }}</td>
+                    <td>{{ message.message }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
