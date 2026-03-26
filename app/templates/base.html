@@ -10,11 +10,28 @@
     <div class="app-shell">
         <header class="site-header">
             <div class="site-header__inner">
-                <span class="site-title">{{ config.APP_NAME }}</span>
+                <a class="site-title" href="{{ url_for('main.index') }}">{{ config.APP_NAME }}</a>
+                <nav class="main-nav" aria-label="Основное меню">
+                    <a href="{{ url_for('main.index') }}">Главная</a>
+                    <a href="{{ url_for('main.about') }}">О проекте</a>
+                    <a href="{{ url_for('main.contacts') }}">Контакты</a>
+                </nav>
             </div>
         </header>
 
         <main class="page">
+            {% if breadcrumbs %}
+            <nav class="breadcrumbs" aria-label="Хлебные крошки">
+                {% for item in breadcrumbs %}
+                    {% if item.endpoint %}
+                    <a href="{{ url_for(item.endpoint) }}">{{ item.title }}</a>
+                    {% else %}
+                    <span>{{ item.title }}</span>
+                    {% endif %}
+                {% endfor %}
+            </nav>
+            {% endif %}
+
             {% block content %}{% endblock %}
         </main>
     </div>

@@ -18,11 +18,29 @@ body {
     max-width: 960px;
     margin: 0 auto;
     padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
 }
 
 .site-title {
     font-size: 20px;
     font-weight: 700;
+    color: #102a43;
+    text-decoration: none;
+}
+
+.main-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.main-nav a {
+    color: #334e68;
+    text-decoration: none;
+    font-weight: 600;
 }
 
 .page {
@@ -36,6 +54,31 @@ body {
     padding: 32px;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.card {
+    background-color: #ffffff;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+.breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    color: #486581;
+    font-size: 14px;
+}
+
+.breadcrumbs a {
+    color: #486581;
+    text-decoration: none;
+}
+
+.breadcrumbs span {
+    font-weight: 600;
 }
 
 h1 {
