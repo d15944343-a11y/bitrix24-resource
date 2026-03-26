@@ -619,6 +619,11 @@ def admin_user_create():
 @role_required("Администратор")
 def admin_user_delete(user_id: int):
     user = User.query.get_or_404(user_id)
+
+    if session.get("user_id") == user.id:
+        flash("Нельзя удалить текущую учетную запись администратора.", "error")
+        return redirect(url_for("main.admin_user_detail", user_id=user.id))
+
     user_name = user.full_name
 
     db.session.delete(user)
