@@ -85,6 +85,21 @@ def clients():
     )
 
 
+@main_bp.route("/clients/<int:client_id>")
+@login_required
+def client_detail(client_id: int):
+    client = Client.query.get_or_404(client_id)
+    return render_template(
+        "client_detail.html",
+        client=client,
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Клиенты", "endpoint": "main.clients"},
+            {"title": "Карточка клиента"},
+        ],
+    )
+
+
 @main_bp.route("/integration")
 def integration():
     return render_template(
