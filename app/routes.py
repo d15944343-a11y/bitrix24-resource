@@ -100,8 +100,19 @@ def segments():
 
 @main_bp.route("/reports")
 def reports():
+    clients = Client.query.all()
+
+    status_counts = {}
+    city_counts = {}
+
+    for client in clients:
+        status_counts[client.status] = status_counts.get(client.status, 0) + 1
+        city_counts[client.city] = city_counts.get(client.city, 0) + 1
+
     return render_template(
         "reports.html",
+        status_counts=status_counts,
+        city_counts=city_counts,
         breadcrumbs=[
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Отчеты"},

@@ -4,7 +4,45 @@
 
 {% block content %}
 <section class="card">
-    <h1>Отчеты</h1>
-    <p>В дальнейшем здесь появятся отчеты по клиентам, сделкам, активности менеджеров и результатам сегментации.</p>
+    <h1>Отчеты по клиентской базе</h1>
+    <p>В этом разделе собраны базовые сводные отчеты по статусам и географии клиентов.</p>
+
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Статус</th>
+                    <th>Количество клиентов</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for status, count in status_counts.items() %}
+                <tr>
+                    <td>{{ status }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Город</th>
+                    <th>Количество клиентов</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for city, count in city_counts.items() %}
+                <tr>
+                    <td>{{ city }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </section>
 {% endblock %}
