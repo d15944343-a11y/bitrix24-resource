@@ -42,7 +42,13 @@ flask --app app init-db
 flask --app app seed-users
 ```
 
-6. Открыть в браузере:
+6. Добавить демонстрационных клиентов:
+
+```bash
+flask --app app seed-clients
+```
+
+7. Открыть в браузере:
 
 ```text
 http://127.0.0.1:5000/

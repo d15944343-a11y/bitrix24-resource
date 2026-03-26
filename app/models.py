@@ -32,3 +32,16 @@ class User(BaseModel):
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"
+
+
+class Client(BaseModel):
+    __tablename__ = "clients"
+
+    full_name = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    phone = db.Column(db.String(30), nullable=False)
+    city = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.String(50), nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<Client {self.email}>"

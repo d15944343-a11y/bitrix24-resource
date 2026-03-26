@@ -17,7 +17,7 @@ def create_app() -> Flask:
         load_current_user()
 
     from .routes import main_bp
-    from .models import Role, User
+    from .models import Client, Role, User
 
     app.register_blueprint(main_bp)
 
@@ -67,5 +67,31 @@ def create_app() -> Flask:
 
         db.session.commit()
         print("Роли и демонстрационные пользователи добавлены.")
+
+    @app.cli.command("seed-clients")
+    def seed_clients() -> None:
+        db.create_all()
+
+        clients_data = [
+            ("Иван Петров", "ivan.petrov@example.com", "+7 (900) 111-22-33", "Москва", "Новый"),
+            ("Мария Соколова", "maria.sokolova@example.com", "+7 (901) 222-33-44", "Санкт-Петербург", "В работе"),
+            ("Алексей Кузнецов", "alexey.kuznetsov@example.com", "+7 (902) 333-44-55", "Казань", "Постоянный"),
+            ("Елена Смирнова", "elena.smirnova@example.com", "+7 (903) 444-55-66", "Екатеринбург", "Неактивный"),
+        ]
+
+        for full_name, email, phone, city, status in clients_data:
+            client = Client.query.filter_by(email=email).first()
+            if client is None:
+                client = Client(
+                    full_name=full_name,
+                    email=email,
+                    phone=phone,
+                    city=city,
+                    status=status,
+                )
+                db.session.add(client)
+
+        db.session.commit()
+        print("Демонстрационные клиенты добавлены.")
 
     return app

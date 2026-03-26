@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Клиенты | {{ config.APP_NAME }}{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Клиентская база</h1>
+    <p>Базовый список клиентов для дальнейшего развития аналитики, сегментации и интеграции с Bitrix24.</p>
+
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>ФИО</th>
+                    <th>Email</th>
+                    <th>Телефон</th>
+                    <th>Город</th>
+                    <th>Статус</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in clients %}
+                <tr>
+                    <td>{{ client.id }}</td>
+                    <td>{{ client.full_name }}</td>
+                    <td>{{ client.email }}</td>
+                    <td>{{ client.phone }}</td>
+                    <td>{{ client.city }}</td>
+                    <td>{{ client.status }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

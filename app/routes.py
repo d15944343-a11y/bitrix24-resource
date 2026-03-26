@@ -2,7 +2,7 @@ from flask import Blueprint, flash, g, redirect, render_template, request, sessi
 
 from .auth import login_required, role_required
 from .extensions import db
-from .models import Role, User
+from .models import Client, Role, User
 
 
 main_bp = Blueprint("main", __name__)
@@ -67,6 +67,20 @@ def reports():
         breadcrumbs=[
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Отчеты"},
+        ],
+    )
+
+
+@main_bp.route("/clients")
+@login_required
+def clients():
+    clients_list = Client.query.order_by(Client.id.asc()).all()
+    return render_template(
+        "clients.html",
+        clients=clients_list,
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Клиенты"},
         ],
     )
 
