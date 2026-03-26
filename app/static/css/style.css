@@ -107,6 +107,14 @@ body {
     font-size: 16px;
 }
 
+.form-field select {
+    padding: 12px 14px;
+    border: 1px solid #bcccdc;
+    border-radius: 10px;
+    font-size: 16px;
+    background-color: #ffffff;
+}
+
 .button {
     width: fit-content;
     padding: 12px 20px;
@@ -130,6 +138,21 @@ body {
 .section-actions {
     margin-top: 20px;
     margin-bottom: 8px;
+}
+
+.edit-form {
+    margin-top: 28px;
+    display: grid;
+    gap: 18px;
+    padding-top: 24px;
+    border-top: 1px solid #d9e2ec;
+}
+
+.checkbox-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
 }
 
 .breadcrumbs {

@@ -1,6 +1,7 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
 
 from .auth import login_required, role_required
+from .extensions import db
 from .models import Role, User
 
 
@@ -123,13 +124,32 @@ def admin_roles():
     )
 
 
-@main_bp.route("/admin/users/<int:user_id>")
+@main_bp.route("/admin/users/<int:user_id>", methods=["GET", "POST"])
 @role_required("Администратор")
 def admin_user_detail(user_id: int):
     user = User.query.get_or_404(user_id)
+    roles = Role.query.order_by(Role.name.asc()).all()
+
+    if request.method == "POST":
+        role_id = request.form.get("role_id", type=int)
+        is_active = request.form.get("is_active") == "on"
+
+        role = Role.query.get(role_id)
+        if role is None:
+            flash("Выбрана некорректная роль.", "error")
+            return redirect(url_for("main.admin_user_detail", user_id=user.id))
+
+        user.role_id = role.id
+        user.is_active = is_active
+        db.session.commit()
+
+        flash("Данные пользователя обновлены.", "success")
+        return redirect(url_for("main.admin_user_detail", user_id=user.id))
+
     return render_template(
         "admin_user_detail.html",
         user=user,
+        roles=roles,
         breadcrumbs=[
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Панель администратора", "endpoint": "main.admin_panel"},
