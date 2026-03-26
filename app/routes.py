@@ -3,7 +3,7 @@ import requests
 
 from .auth import login_required, role_required
 from .extensions import db
-from .models import Client, FeedbackMessage, IntegrationSetting, Role, User
+from .models import Client, FeedbackMessage, IntegrationLog, IntegrationSetting, Role, User
 
 
 main_bp = Blueprint("main", __name__)
@@ -234,6 +234,7 @@ def client_delete(client_id: int):
 @login_required
 def integration():
     setting = IntegrationSetting.query.filter_by(service_name="bitrix24").first()
+    logs = IntegrationLog.query.filter_by(service_name="bitrix24").order_by(IntegrationLog.id.desc()).limit(5).all()
 
     if request.method == "POST":
         webhook_url = request.form.get("webhook_url", "").strip()
@@ -269,6 +270,7 @@ def integration():
     return render_template(
         "integration.html",
         setting=setting,
+        logs=logs,
         form_data={
             "webhook_url": setting.webhook_url if setting else "",
             "is_active": setting.is_active if setting else False,
@@ -297,12 +299,48 @@ def integration_check():
         data = response.json()
 
         if "result" in data:
+            db.session.add(
+                IntegrationLog(
+                    service_name="bitrix24",
+                    operation="check_connection",
+                    status="success",
+                    message="Подключение к Bitrix24 успешно проверено.",
+                )
+            )
+            db.session.commit()
             flash("Подключение к Bitrix24 успешно проверено.", "success")
         else:
+            db.session.add(
+                IntegrationLog(
+                    service_name="bitrix24",
+                    operation="check_connection",
+                    status="error",
+                    message="Bitrix24 ответил без ожидаемого результата.",
+                )
+            )
+            db.session.commit()
             flash("Bitrix24 ответил без ожидаемого результата.", "error")
     except requests.RequestException:
+        db.session.add(
+            IntegrationLog(
+                service_name="bitrix24",
+                operation="check_connection",
+                status="error",
+                message="Не удалось подключиться к Bitrix24 по указанному webhook URL.",
+            )
+        )
+        db.session.commit()
         flash("Не удалось подключиться к Bitrix24 по указанному webhook URL.", "error")
     except ValueError:
+        db.session.add(
+            IntegrationLog(
+                service_name="bitrix24",
+                operation="check_connection",
+                status="error",
+                message="Bitrix24 вернул некорректный формат ответа.",
+            )
+        )
+        db.session.commit()
         flash("Bitrix24 вернул некорректный формат ответа.", "error")
 
     return redirect(url_for("main.integration"))

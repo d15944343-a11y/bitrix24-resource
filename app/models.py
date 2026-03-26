@@ -69,3 +69,15 @@ class IntegrationSetting(BaseModel):
 
     def __repr__(self) -> str:
         return f"<IntegrationSetting {self.service_name}>"
+
+
+class IntegrationLog(BaseModel):
+    __tablename__ = "integration_logs"
+
+    service_name = db.Column(db.String(100), nullable=False)
+    operation = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.String(50), nullable=False)
+    message = db.Column(db.String(255), nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<IntegrationLog {self.service_name}:{self.operation}>"
