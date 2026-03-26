@@ -551,6 +551,70 @@ def admin_panel():
     )
 
 
+@main_bp.route("/admin/users/create", methods=["GET", "POST"])
+@role_required("Администратор")
+def admin_user_create():
+    roles = Role.query.order_by(Role.name.asc()).all()
+
+    if request.method == "POST":
+        full_name = request.form.get("full_name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "").strip()
+        role_id = request.form.get("role_id", type=int)
+        is_active = request.form.get("is_active") == "on"
+
+        if not all([full_name, email, password, role_id]):
+            flash("Заполните все обязательные поля.", "error")
+            return render_template(
+                "admin_user_create.html",
+                roles=roles,
+                form_data=request.form,
+                breadcrumbs=[
+                    {"title": "Главная", "endpoint": "main.index"},
+                    {"title": "Панель администратора", "endpoint": "main.admin_panel"},
+                    {"title": "Новый пользователь"},
+                ],
+            )
+
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user is not None:
+            flash("Пользователь с таким email уже существует.", "error")
+            return render_template(
+                "admin_user_create.html",
+                roles=roles,
+                form_data=request.form,
+                breadcrumbs=[
+                    {"title": "Главная", "endpoint": "main.index"},
+                    {"title": "Панель администратора", "endpoint": "main.admin_panel"},
+                    {"title": "Новый пользователь"},
+                ],
+            )
+
+        user = User(
+            full_name=full_name,
+            email=email,
+            password=password,
+            role_id=role_id,
+            is_active=is_active,
+        )
+        db.session.add(user)
+        db.session.commit()
+
+        flash("Пользователь успешно создан.", "success")
+        return redirect(url_for("main.admin_user_detail", user_id=user.id))
+
+    return render_template(
+        "admin_user_create.html",
+        roles=roles,
+        form_data={},
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Панель администратора", "endpoint": "main.admin_panel"},
+            {"title": "Новый пользователь"},
+        ],
+    )
+
+
 @main_bp.route("/admin/roles")
 @role_required("Администратор")
 def admin_roles():

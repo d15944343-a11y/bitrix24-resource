@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Новый пользователь | {{ config.APP_NAME }}{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h1>Создание пользователя</h1>
+    <p>Заполните данные нового пользователя и назначьте ему роль в системе.</p>
+
+    <form class="auth-form" method="post">
+        <label class="form-field">
+            <span>ФИО</span>
+            <input type="text" name="full_name" value="{{ form_data.get('full_name', '') }}" required>
+        </label>
+
+        <label class="form-field">
+            <span>Email</span>
+            <input type="email" name="email" value="{{ form_data.get('email', '') }}" required>
+        </label>
+
+        <label class="form-field">
+            <span>Пароль</span>
+            <input type="text" name="password" value="{{ form_data.get('password', '') }}" required>
+        </label>
+
+        <label class="form-field">
+            <span>Роль</span>
+            <select name="role_id" required>
+                <option value="">Выберите роль</option>
+                {% for role in roles %}
+                <option value="{{ role.id }}" {% if form_data.get('role_id')|string == role.id|string %}selected{% endif %}>
+                    {{ role.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label class="checkbox-field">
+            <input type="checkbox" name="is_active" {% if form_data.get('is_active') %}checked{% endif %}>
+            <span>Пользователь активен</span>
+        </label>
+
+        <button class="button" type="submit">Создать пользователя</button>
+    </form>
+</section>
+{% endblock %}

@@ -9,6 +9,7 @@
     <p><strong>Доступ разрешен роли:</strong> Администратор.</p>
 
     <div class="section-actions">
+        <a class="button" href="{{ url_for('main.admin_user_create') }}">Добавить пользователя</a>
         <a class="button button--secondary" href="{{ url_for('main.admin_roles') }}">Открыть список ролей</a>
         <a class="button button--secondary" href="{{ url_for('main.admin_feedback') }}">Открыть обращения</a>
     </div>
