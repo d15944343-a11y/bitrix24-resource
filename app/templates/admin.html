@@ -14,6 +14,28 @@
         <a class="button button--secondary" href="{{ url_for('main.admin_feedback') }}">Открыть обращения</a>
     </div>
 
+    <form class="filter-form" method="get">
+        <label class="form-field">
+            <span>Поиск по ФИО или email</span>
+            <input type="text" name="search" value="{{ search }}" placeholder="Введите имя или email">
+        </label>
+
+        <label class="form-field">
+            <span>Роль</span>
+            <select name="role">
+                <option value="">Все роли</option>
+                {% for role in roles %}
+                <option value="{{ role.name }}" {% if selected_role == role.name %}selected{% endif %}>{{ role.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <div class="filter-actions">
+            <button class="button" type="submit">Применить</button>
+            <a class="button button--secondary" href="{{ url_for('main.admin_panel') }}">Сбросить</a>
+        </div>
+    </form>
+
     <div class="table-wrap">
         <table class="data-table">
             <thead>

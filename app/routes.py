@@ -540,10 +540,30 @@ def dashboard():
 @main_bp.route("/admin")
 @role_required("Администратор")
 def admin_panel():
+    search = request.args.get("search", "").strip()
+    role_filter = request.args.get("role", "").strip()
+
     users = User.query.order_by(User.id.asc()).all()
+    roles = Role.query.order_by(Role.name.asc()).all()
+
+    if search:
+        normalized_search = search.casefold()
+        users = [
+            user
+            for user in users
+            if normalized_search in user.full_name.casefold()
+            or normalized_search in user.email.casefold()
+        ]
+
+    if role_filter:
+        users = [user for user in users if user.role.name == role_filter]
+
     return render_template(
         "admin.html",
         users=users,
+        roles=roles,
+        search=search,
+        selected_role=role_filter,
         breadcrumbs=[
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Панель администратора"},
