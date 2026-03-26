@@ -1,9 +1,11 @@
 from flask import Flask
 
+from config import Config
+
 
 def create_app() -> Flask:
     app = Flask(__name__)
-    app.config["SECRET_KEY"] = "dev-secret-key"
+    app.config.from_object(Config)
 
     from .routes import main_bp
 

@@ -5,10 +5,37 @@ body {
     color: #1f2933;
 }
 
+.app-shell {
+    min-height: 100vh;
+}
+
+.site-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #d9e2ec;
+}
+
+.site-header__inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 18px 24px;
+}
+
+.site-title {
+    font-size: 20px;
+    font-weight: 700;
+}
+
 .page {
     max-width: 960px;
     margin: 80px auto;
     padding: 0 24px;
+}
+
+.hero {
+    background-color: #ffffff;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
 }
 
 h1 {
