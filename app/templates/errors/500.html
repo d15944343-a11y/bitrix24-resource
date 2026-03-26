@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Внутренняя ошибка сервера | {{ config.APP_NAME }}{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h1>Ошибка 500</h1>
+    <p>Во время обработки запроса произошла внутренняя ошибка сервера. Попробуйте повторить действие позже.</p>
+    <div class="section-actions">
+        <a class="button" href="{{ url_for('main.index') }}">Вернуться на главную</a>
+    </div>
+</section>
+{% endblock %}

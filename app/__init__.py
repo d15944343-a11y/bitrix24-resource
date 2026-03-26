@@ -28,6 +28,10 @@ def create_app() -> Flask:
     def page_not_found(error):
         return render_template("errors/404.html"), 404
 
+    @app.errorhandler(500)
+    def internal_server_error(error):
+        return render_template("errors/500.html"), 500
+
     @app.cli.command("init-db")
     def init_db() -> None:
         db.create_all()
