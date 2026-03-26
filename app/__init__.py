@@ -2,6 +2,7 @@ from flask import Flask
 from sqlalchemy import inspect
 
 from config import Config
+from .auth import load_current_user
 from .extensions import db
 
 
@@ -10,6 +11,10 @@ def create_app() -> Flask:
     app.config.from_object(Config)
 
     db.init_app(app)
+
+    @app.before_request
+    def before_request() -> None:
+        load_current_user()
 
     from .routes import main_bp
     from .models import Role, User

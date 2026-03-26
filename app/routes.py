@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
 
 from .auth import login_required, role_required
 from .models import User
@@ -86,6 +86,7 @@ def integration():
 def dashboard():
     return render_template(
         "dashboard.html",
+        user=g.current_user,
         breadcrumbs=[
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Личный кабинет"},
@@ -112,6 +113,20 @@ def recommendations():
         breadcrumbs=[
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Рекомендации"},
+        ],
+    )
+
+
+@main_bp.route("/profile")
+@login_required
+def profile():
+    return render_template(
+        "profile.html",
+        user=g.current_user,
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Личный кабинет", "endpoint": "main.dashboard"},
+            {"title": "Профиль"},
         ],
     )
 

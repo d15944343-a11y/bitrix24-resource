@@ -6,11 +6,9 @@
 <section class="card">
     <h1>Личный кабинет</h1>
     <p>Этот раздел станет основой для персональной рабочей области пользователя с доступом к аналитике и данным CRM.</p>
-    {% if session.get('user_id') %}
-    <p><strong>Текущий пользователь:</strong> {{ session.get('user_name') }}</p>
-    <p><strong>Роль:</strong> {{ session.get('role_name') }}</p>
-    {% else %}
-    <p>Пользователь пока не авторизован.</p>
-    {% endif %}
+    <p><strong>Текущий пользователь:</strong> {{ user.full_name }}</p>
+    <p><strong>Роль:</strong> {{ user.role.name }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <a class="button button--secondary" href="{{ url_for('main.profile') }}">Открыть профиль</a>
 </section>
 {% endblock %}

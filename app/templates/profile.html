@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль | {{ config.APP_NAME }}{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Профиль пользователя</h1>
+    <div class="profile-grid">
+        <div class="profile-item">
+            <span class="profile-item__label">ФИО</span>
+            <span class="profile-item__value">{{ user.full_name }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Email</span>
+            <span class="profile-item__value">{{ user.email }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Роль</span>
+            <span class="profile-item__value">{{ user.role.name }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Статус</span>
+            <span class="profile-item__value">
+                {% if user.is_active %}
+                Активен
+                {% else %}
+                Неактивен
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</section>
+{% endblock %}
