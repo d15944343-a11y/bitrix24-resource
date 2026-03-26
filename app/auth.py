@@ -1,6 +1,6 @@
 from functools import wraps
 
-from flask import flash, g, redirect, session, url_for
+from flask import abort, flash, g, redirect, session, url_for
 
 from .models import User
 
@@ -25,8 +25,7 @@ def role_required(*allowed_roles):
                 return redirect(url_for("main.login"))
 
             if session.get("role_name") not in allowed_roles:
-                flash("Недостаточно прав для доступа к разделу.", "error")
-                return redirect(url_for("main.index"))
+                abort(403)
 
             return view(*args, **kwargs)
 

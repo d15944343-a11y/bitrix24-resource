@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Доступ запрещен | {{ config.APP_NAME }}{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h1>Ошибка 403</h1>
+    <p>У вас недостаточно прав для доступа к этому разделу.</p>
+    <div class="section-actions">
+        <a class="button" href="{{ url_for('main.index') }}">Вернуться на главную</a>
+    </div>
+</section>
+{% endblock %}
