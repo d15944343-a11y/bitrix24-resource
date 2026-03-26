@@ -301,9 +301,13 @@ def admin_feedback():
 @role_required("Администратор")
 def admin_feedback_detail(message_id: int):
     message = FeedbackMessage.query.get_or_404(message_id)
+    if not message.status:
+        message.status = "Новое"
+        db.session.commit()
     return render_template(
         "admin_feedback_detail.html",
         message=message,
+        statuses=["Новое", "В работе", "Закрыто"],
         breadcrumbs=[
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Панель администратора", "endpoint": "main.admin_panel"},
@@ -311,6 +315,23 @@ def admin_feedback_detail(message_id: int):
             {"title": "Карточка обращения"},
         ],
     )
+
+
+@main_bp.route("/admin/feedback/<int:message_id>/status", methods=["POST"])
+@role_required("Администратор")
+def admin_feedback_update_status(message_id: int):
+    message = FeedbackMessage.query.get_or_404(message_id)
+    new_status = request.form.get("status", "").strip()
+
+    if new_status not in {"Новое", "В работе", "Закрыто"}:
+        flash("Выбран некорректный статус обращения.", "error")
+        return redirect(url_for("main.admin_feedback_detail", message_id=message.id))
+
+    message.status = new_status
+    db.session.commit()
+
+    flash("Статус обращения обновлен.", "success")
+    return redirect(url_for("main.admin_feedback_detail", message_id=message.id))
 
 
 @main_bp.route("/admin/users/<int:user_id>", methods=["GET", "POST"])

@@ -19,6 +19,7 @@
                     <th>Имя</th>
                     <th>Email</th>
                     <th>Тема</th>
+                    <th>Статус</th>
                     <th>Сообщение</th>
                 </tr>
             </thead>
@@ -33,6 +34,7 @@
                     </td>
                     <td>{{ message.email }}</td>
                     <td>{{ message.subject }}</td>
+                    <td>{{ message.status or "Новое" }}</td>
                     <td>{{ message.message }}</td>
                 </tr>
                 {% endfor %}

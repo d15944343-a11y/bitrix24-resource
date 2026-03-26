@@ -54,6 +54,7 @@ class FeedbackMessage(BaseModel):
     email = db.Column(db.String(120), nullable=False)
     subject = db.Column(db.String(200), nullable=False)
     message = db.Column(db.Text, nullable=False)
+    status = db.Column(db.String(50), nullable=False, default="Новое")
 
     def __repr__(self) -> str:
         return f"<FeedbackMessage {self.email}>"
