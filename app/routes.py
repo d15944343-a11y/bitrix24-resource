@@ -615,6 +615,19 @@ def admin_user_create():
     )
 
 
+@main_bp.route("/admin/users/<int:user_id>/delete", methods=["POST"])
+@role_required("Администратор")
+def admin_user_delete(user_id: int):
+    user = User.query.get_or_404(user_id)
+    user_name = user.full_name
+
+    db.session.delete(user)
+    db.session.commit()
+
+    flash(f"Пользователь {user_name} удален.", "success")
+    return redirect(url_for("main.admin_panel"))
+
+
 @main_bp.route("/admin/roles")
 @role_required("Администратор")
 def admin_roles():

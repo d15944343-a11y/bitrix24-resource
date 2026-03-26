@@ -8,6 +8,9 @@
 
     <div class="section-actions">
         <a class="button button--secondary" href="{{ url_for('main.admin_panel') }}">Вернуться к списку пользователей</a>
+        <form method="post" action="{{ url_for('main.admin_user_delete', user_id=user.id) }}">
+            <button class="button button--danger" type="submit">Удалить пользователя</button>
+        </form>
     </div>
 
     <div class="profile-grid">
