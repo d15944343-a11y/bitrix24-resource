@@ -5,6 +5,32 @@
 {% block content %}
 <section class="card">
     <h1>Интеграция с Bitrix24</h1>
-    <p>Этот раздел подготовлен под настройку webhook, синхронизацию данных и просмотр статуса обмена с CRM Bitrix24.</p>
+    <p>Этот раздел используется для сохранения базовых настроек подключения к Bitrix24 через webhook.</p>
+
+    <form class="auth-form" method="post">
+        <label class="form-field">
+            <span>Webhook URL</span>
+            <input type="url" name="webhook_url" value="{{ form_data.get('webhook_url', '') }}" placeholder="https://your-domain.bitrix24.ru/rest/..." required>
+        </label>
+
+        <label class="checkbox-field">
+            <input type="checkbox" name="is_active" {% if form_data.get('is_active') %}checked{% endif %}>
+            <span>Интеграция активна</span>
+        </label>
+
+        <button class="button" type="submit">Сохранить настройки</button>
+    </form>
+
+    {% if setting %}
+    <div class="section-actions">
+        <span class="status-badge {% if setting.is_active %}status-badge--active{% else %}status-badge--inactive{% endif %}">
+            {% if setting.is_active %}
+            Интеграция включена
+            {% else %}
+            Интеграция выключена
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
 </section>
 {% endblock %}

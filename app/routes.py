@@ -2,7 +2,7 @@ from flask import Blueprint, flash, g, redirect, render_template, request, sessi
 
 from .auth import login_required, role_required
 from .extensions import db
-from .models import Client, FeedbackMessage, Role, User
+from .models import Client, FeedbackMessage, IntegrationSetting, Role, User
 
 
 main_bp = Blueprint("main", __name__)
@@ -229,10 +229,49 @@ def client_delete(client_id: int):
     return redirect(url_for("main.clients"))
 
 
-@main_bp.route("/integration")
+@main_bp.route("/integration", methods=["GET", "POST"])
+@login_required
 def integration():
+    setting = IntegrationSetting.query.filter_by(service_name="bitrix24").first()
+
+    if request.method == "POST":
+        webhook_url = request.form.get("webhook_url", "").strip()
+        is_active = request.form.get("is_active") == "on"
+
+        if not webhook_url:
+            flash("Укажите webhook URL для интеграции.", "error")
+            return render_template(
+                "integration.html",
+                setting=setting,
+                form_data=request.form,
+                breadcrumbs=[
+                    {"title": "Главная", "endpoint": "main.index"},
+                    {"title": "Интеграция Bitrix24"},
+                ],
+            )
+
+        if setting is None:
+            setting = IntegrationSetting(
+                service_name="bitrix24",
+                webhook_url=webhook_url,
+                is_active=is_active,
+            )
+            db.session.add(setting)
+        else:
+            setting.webhook_url = webhook_url
+            setting.is_active = is_active
+
+        db.session.commit()
+        flash("Настройки интеграции сохранены.", "success")
+        return redirect(url_for("main.integration"))
+
     return render_template(
         "integration.html",
+        setting=setting,
+        form_data={
+            "webhook_url": setting.webhook_url if setting else "",
+            "is_active": setting.is_active if setting else False,
+        },
         breadcrumbs=[
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Интеграция Bitrix24"},

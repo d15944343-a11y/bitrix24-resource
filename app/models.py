@@ -58,3 +58,14 @@ class FeedbackMessage(BaseModel):
 
     def __repr__(self) -> str:
         return f"<FeedbackMessage {self.email}>"
+
+
+class IntegrationSetting(BaseModel):
+    __tablename__ = "integration_settings"
+
+    service_name = db.Column(db.String(100), nullable=False, unique=True)
+    webhook_url = db.Column(db.String(500), nullable=False)
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
+
+    def __repr__(self) -> str:
+        return f"<IntegrationSetting {self.service_name}>"
