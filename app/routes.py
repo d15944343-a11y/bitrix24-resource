@@ -7,6 +7,7 @@ import requests
 from .auth import login_required, role_required
 from .extensions import db
 from .models import Client, FeedbackMessage, IntegrationLog, IntegrationSetting, Role, User
+from .validators import is_valid_email
 
 
 main_bp = Blueprint("main", __name__)
@@ -40,6 +41,10 @@ def contacts():
 
         if not all([name, email, subject, message]):
             flash("Заполните все поля формы обратной связи.", "error")
+            return render_template("contacts.html", form_data=request.form, breadcrumbs=breadcrumbs)
+
+        if not is_valid_email(email):
+            flash("Укажите корректный email адрес.", "error")
             return render_template("contacts.html", form_data=request.form, breadcrumbs=breadcrumbs)
 
         feedback = FeedbackMessage(name=name, email=email, subject=subject, message=message)
@@ -207,6 +212,10 @@ def client_create():
             flash("Заполните все поля формы.", "error")
             return render_template("client_create.html", form_data=request.form, breadcrumbs=breadcrumbs)
 
+        if not is_valid_email(email):
+            flash("Укажите корректный email адрес клиента.", "error")
+            return render_template("client_create.html", form_data=request.form, breadcrumbs=breadcrumbs)
+
         existing_client = Client.query.filter_by(email=email).first()
         if existing_client is not None:
             flash("Клиент с таким email уже существует.", "error")
@@ -257,6 +266,10 @@ def client_edit(client_id: int):
 
         if not all([full_name, email, phone, city, status]):
             flash("Заполните все поля формы.", "error")
+            return render_template("client_edit.html", form_data=request.form, breadcrumbs=breadcrumbs)
+
+        if not is_valid_email(email):
+            flash("Укажите корректный email адрес клиента.", "error")
             return render_template("client_edit.html", form_data=request.form, breadcrumbs=breadcrumbs)
 
         existing_client = Client.query.filter(Client.email == email, Client.id != client.id).first()
@@ -596,6 +609,19 @@ def admin_user_create():
                 ],
             )
 
+        if not is_valid_email(email):
+            flash("Укажите корректный email адрес пользователя.", "error")
+            return render_template(
+                "admin_user_create.html",
+                roles=roles,
+                form_data=request.form,
+                breadcrumbs=[
+                    {"title": "Главная", "endpoint": "main.index"},
+                    {"title": "Панель администратора", "endpoint": "main.admin_panel"},
+                    {"title": "Новый пользователь"},
+                ],
+            )
+
         existing_user = User.query.filter_by(email=email).first()
         if existing_user is not None:
             flash("Пользователь с таким email уже существует.", "error")
@@ -814,6 +840,16 @@ def login():
     if request.method == "POST":
         email = request.form.get("email", "").strip().lower()
         password = request.form.get("password", "").strip()
+
+        if not is_valid_email(email):
+            flash("Укажите корректный email адрес.", "error")
+            return render_template(
+                "login.html",
+                breadcrumbs=[
+                    {"title": "Главная", "endpoint": "main.index"},
+                    {"title": "Вход"},
+                ],
+            )
 
         user = User.query.filter_by(email=email, is_active=True).first()
         if user and user.password == password:
