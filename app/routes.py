@@ -177,6 +177,62 @@ def client_detail(client_id: int):
     )
 
 
+@main_bp.route("/clients/<int:client_id>/edit", methods=["GET", "POST"])
+@login_required
+def client_edit(client_id: int):
+    client = Client.query.get_or_404(client_id)
+
+    if request.method == "POST":
+        full_name = request.form.get("full_name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        phone = request.form.get("phone", "").strip()
+        city = request.form.get("city", "").strip()
+        status = request.form.get("status", "").strip()
+
+        breadcrumbs = [
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Клиенты", "endpoint": "main.clients"},
+            {"title": "Карточка клиента", "endpoint": "main.client_detail", "params": {"client_id": client.id}},
+            {"title": "Редактирование"},
+        ]
+
+        if not all([full_name, email, phone, city, status]):
+            flash("Заполните все поля формы.", "error")
+            return render_template("client_edit.html", form_data=request.form, breadcrumbs=breadcrumbs)
+
+        existing_client = Client.query.filter(Client.email == email, Client.id != client.id).first()
+        if existing_client is not None:
+            flash("Другой клиент с таким email уже существует.", "error")
+            return render_template("client_edit.html", form_data=request.form, breadcrumbs=breadcrumbs)
+
+        client.full_name = full_name
+        client.email = email
+        client.phone = phone
+        client.city = city
+        client.status = status
+        db.session.commit()
+
+        flash("Данные клиента обновлены.", "success")
+        return redirect(url_for("main.client_detail", client_id=client.id))
+
+    return render_template(
+        "client_edit.html",
+        form_data={
+            "full_name": client.full_name,
+            "email": client.email,
+            "phone": client.phone,
+            "city": client.city,
+            "status": client.status,
+        },
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Клиенты", "endpoint": "main.clients"},
+            {"title": "Карточка клиента", "endpoint": "main.client_detail", "params": {"client_id": client.id}},
+            {"title": "Редактирование"},
+        ],
+    )
+
+
 @main_bp.route("/integration")
 def integration():
     return render_template(

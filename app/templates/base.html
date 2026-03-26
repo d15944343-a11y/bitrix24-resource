@@ -50,7 +50,7 @@
             <nav class="breadcrumbs" aria-label="Хлебные крошки">
                 {% for item in breadcrumbs %}
                     {% if item.endpoint %}
-                    <a href="{{ url_for(item.endpoint) }}">{{ item.title }}</a>
+                    <a href="{{ url_for(item.endpoint, **item.get('params', {})) }}">{{ item.title }}</a>
                     {% else %}
                     <span>{{ item.title }}</span>
                     {% endif %}
