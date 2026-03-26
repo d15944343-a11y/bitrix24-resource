@@ -346,6 +346,99 @@ def integration_check():
     return redirect(url_for("main.integration"))
 
 
+@main_bp.route("/integration/import-clients", methods=["POST"])
+@login_required
+def integration_import_clients():
+    setting = IntegrationSetting.query.filter_by(service_name="bitrix24").first()
+
+    if setting is None or not setting.webhook_url:
+        flash("Сначала сохраните webhook URL для интеграции.", "error")
+        return redirect(url_for("main.integration"))
+
+    import_url = setting.webhook_url.rstrip("/") + "/crm.contact.list.json"
+
+    try:
+        response = requests.get(
+            import_url,
+            params={
+                "select[]": ["NAME", "LAST_NAME", "PHONE", "EMAIL", "ADDRESS_CITY"],
+            },
+            timeout=15,
+        )
+        response.raise_for_status()
+        data = response.json()
+        items = data.get("result", [])
+
+        imported_count = 0
+        for item in items:
+            first_name = (item.get("NAME") or "").strip()
+            last_name = (item.get("LAST_NAME") or "").strip()
+            full_name = " ".join(part for part in [first_name, last_name] if part).strip() or "Клиент без имени"
+
+            email_list = item.get("EMAIL") or []
+            phone_list = item.get("PHONE") or []
+
+            email = ""
+            if email_list and isinstance(email_list, list):
+                email = (email_list[0].get("VALUE") or "").strip().lower()
+
+            phone = ""
+            if phone_list and isinstance(phone_list, list):
+                phone = (phone_list[0].get("VALUE") or "").strip()
+
+            if not email:
+                continue
+
+            existing_client = Client.query.filter_by(email=email).first()
+            if existing_client is not None:
+                continue
+
+            client = Client(
+                full_name=full_name,
+                email=email,
+                phone=phone or "Не указан",
+                city=(item.get("ADDRESS_CITY") or "").strip() or "Не указан",
+                status="Импортирован из Bitrix24",
+            )
+            db.session.add(client)
+            imported_count += 1
+
+        db.session.add(
+            IntegrationLog(
+                service_name="bitrix24",
+                operation="import_clients",
+                status="success",
+                message=f"Импортировано клиентов: {imported_count}",
+            )
+        )
+        db.session.commit()
+        flash(f"Импорт клиентов завершен. Добавлено записей: {imported_count}.", "success")
+    except requests.RequestException:
+        db.session.add(
+            IntegrationLog(
+                service_name="bitrix24",
+                operation="import_clients",
+                status="error",
+                message="Не удалось выполнить импорт клиентов из Bitrix24.",
+            )
+        )
+        db.session.commit()
+        flash("Не удалось выполнить импорт клиентов из Bitrix24.", "error")
+    except ValueError:
+        db.session.add(
+            IntegrationLog(
+                service_name="bitrix24",
+                operation="import_clients",
+                status="error",
+                message="Bitrix24 вернул некорректный ответ при импорте клиентов.",
+            )
+        )
+        db.session.commit()
+        flash("Bitrix24 вернул некорректный ответ при импорте клиентов.", "error")
+
+    return redirect(url_for("main.integration"))
+
+
 @main_bp.route("/dashboard")
 @login_required
 def dashboard():

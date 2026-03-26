@@ -24,6 +24,9 @@
             <button class="button button--secondary" type="submit" formaction="{{ url_for('main.integration_check') }}" formmethod="post">
                 Проверить подключение
             </button>
+            <button class="button button--secondary" type="submit" formaction="{{ url_for('main.integration_import_clients') }}" formmethod="post">
+                Импортировать клиентов
+            </button>
             {% endif %}
         </div>
     </form>
