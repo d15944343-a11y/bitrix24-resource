@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, flash, redirect, render_template, request, session, url_for
+
+from .models import User
 
 
 main_bp = Blueprint("main", __name__)
@@ -109,3 +111,35 @@ def recommendations():
             {"title": "Рекомендации"},
         ],
     )
+
+
+@main_bp.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "").strip()
+
+        user = User.query.filter_by(email=email, is_active=True).first()
+        if user and user.password == password:
+            session["user_id"] = user.id
+            session["user_name"] = user.full_name
+            session["role_name"] = user.role.name
+            flash("Вход выполнен успешно.", "success")
+            return redirect(url_for("main.dashboard"))
+
+        flash("Неверный email или пароль.", "error")
+
+    return render_template(
+        "login.html",
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Вход"},
+        ],
+    )
+
+
+@main_bp.route("/logout")
+def logout():
+    session.clear()
+    flash("Вы вышли из системы.", "success")
+    return redirect(url_for("main.index"))

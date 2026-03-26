@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Вход | {{ config.APP_NAME }}{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h1>Вход в систему</h1>
+    <p>Используйте одну из демонстрационных учетных записей, созданных через команду заполнения базы данных.</p>
+
+    <form class="auth-form" method="post">
+        <label class="form-field">
+            <span>Email</span>
+            <input type="email" name="email" placeholder="admin@example.com" required>
+        </label>
+
+        <label class="form-field">
+            <span>Пароль</span>
+            <input type="password" name="password" placeholder="Введите пароль" required>
+        </label>
+
+        <button class="button" type="submit">Войти</button>
+    </form>
+</section>
+{% endblock %}

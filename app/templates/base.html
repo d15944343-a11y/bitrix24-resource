@@ -22,11 +22,26 @@
                     <a href="{{ url_for('main.dashboard') }}">Кабинет</a>
                     <a href="{{ url_for('main.admin_panel') }}">Админка</a>
                     <a href="{{ url_for('main.contacts') }}">Контакты</a>
+                    {% if session.get('user_id') %}
+                    <a href="{{ url_for('main.logout') }}">Выход</a>
+                    {% else %}
+                    <a href="{{ url_for('main.login') }}">Вход</a>
+                    {% endif %}
                 </nav>
             </div>
         </header>
 
         <main class="page">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-list">
+                    {% for category, message in messages %}
+                    <div class="flash flash--{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            {% endwith %}
+
             {% if breadcrumbs %}
             <nav class="breadcrumbs" aria-label="Хлебные крошки">
                 {% for item in breadcrumbs %}
