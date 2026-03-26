@@ -76,3 +76,36 @@ def integration():
             {"title": "Интеграция Bitrix24"},
         ],
     )
+
+
+@main_bp.route("/dashboard")
+def dashboard():
+    return render_template(
+        "dashboard.html",
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Личный кабинет"},
+        ],
+    )
+
+
+@main_bp.route("/admin")
+def admin_panel():
+    return render_template(
+        "admin.html",
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Панель администратора"},
+        ],
+    )
+
+
+@main_bp.route("/recommendations")
+def recommendations():
+    return render_template(
+        "recommendations.html",
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Рекомендации"},
+        ],
+    )
