@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from sqlalchemy import inspect
 
 from config import Config
@@ -17,12 +17,16 @@ def create_app() -> Flask:
         load_current_user()
 
     from .routes import main_bp
-    from .models import Client, FeedbackMessage, Role, User
+    from .models import Client, FeedbackMessage, IntegrationLog, IntegrationSetting, Role, User
 
     app.register_blueprint(main_bp)
 
     with app.app_context():
         db.create_all()
+
+    @app.errorhandler(404)
+    def page_not_found(error):
+        return render_template("errors/404.html"), 404
 
     @app.cli.command("init-db")
     def init_db() -> None:
