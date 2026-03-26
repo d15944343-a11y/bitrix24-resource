@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
 
 from .auth import login_required, role_required
-from .models import User
+from .models import Role, User
 
 
 main_bp = Blueprint("main", __name__)
@@ -104,6 +104,21 @@ def admin_panel():
         breadcrumbs=[
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Панель администратора"},
+        ],
+    )
+
+
+@main_bp.route("/admin/roles")
+@role_required("Администратор")
+def admin_roles():
+    roles = Role.query.order_by(Role.id.asc()).all()
+    return render_template(
+        "admin_roles.html",
+        roles=roles,
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Панель администратора", "endpoint": "main.admin_panel"},
+            {"title": "Роли"},
         ],
     )
 

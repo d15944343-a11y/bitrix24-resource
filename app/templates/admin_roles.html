@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Роли | {{ config.APP_NAME }}{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Роли пользователей</h1>
+    <p>Справочник ролей, используемых для разграничения доступа в системе.</p>
+
+    <div class="section-actions">
+        <a class="button button--secondary" href="{{ url_for('main.admin_panel') }}">Вернуться к пользователям</a>
+    </div>
+
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Название роли</th>
+                    <th>Описание</th>
+                    <th>Количество пользователей</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for role in roles %}
+                <tr>
+                    <td>{{ role.id }}</td>
+                    <td>{{ role.name }}</td>
+                    <td>{{ role.description }}</td>
+                    <td>{{ role.users | length }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
