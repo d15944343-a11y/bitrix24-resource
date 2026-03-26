@@ -1,4 +1,7 @@
-from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
+import csv
+from io import StringIO
+
+from flask import Blueprint, Response, flash, g, redirect, render_template, request, session, url_for
 import requests
 
 from .auth import login_required, role_required
@@ -117,6 +120,35 @@ def reports():
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Отчеты"},
         ],
+    )
+
+
+@main_bp.route("/reports/export")
+@login_required
+def reports_export():
+    clients = Client.query.order_by(Client.id.asc()).all()
+
+    output = StringIO()
+    writer = csv.writer(output, delimiter=";")
+    writer.writerow(["ID", "ФИО", "Email", "Телефон", "Город", "Статус"])
+
+    for client in clients:
+        writer.writerow([
+            client.id,
+            client.full_name,
+            client.email,
+            client.phone,
+            client.city,
+            client.status,
+        ])
+
+    csv_data = output.getvalue()
+    output.close()
+
+    return Response(
+        csv_data,
+        mimetype="text/csv; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=clients_report.csv"},
     )
 
 

@@ -7,6 +7,10 @@
     <h1>Отчеты по клиентской базе</h1>
     <p>В этом разделе собраны базовые сводные отчеты по статусам и географии клиентов.</p>
 
+    <div class="section-actions">
+        <a class="button button--secondary" href="{{ url_for('main.reports_export') }}">Скачать CSV-отчет</a>
+    </div>
+
     <div class="table-wrap">
         <table class="data-table">
             <thead>
