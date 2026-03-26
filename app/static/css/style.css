@@ -155,6 +155,19 @@ body {
     font-weight: 600;
 }
 
+.filter-form {
+    margin-top: 24px;
+    margin-bottom: 24px;
+    display: grid;
+    gap: 18px;
+}
+
+.filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
 .breadcrumbs {
     display: flex;
     flex-wrap: wrap;

@@ -1,5 +1,4 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
-
 from .auth import login_required, role_required
 from .extensions import db
 from .models import Client, Role, User
@@ -74,10 +73,29 @@ def reports():
 @main_bp.route("/clients")
 @login_required
 def clients():
+    search = request.args.get("search", "").strip()
+    status = request.args.get("status", "").strip()
+
     clients_list = Client.query.order_by(Client.id.asc()).all()
+
+    if search:
+        normalized_search = search.casefold()
+        clients_list = [
+            client for client in clients_list
+            if normalized_search in client.full_name.casefold() or normalized_search in client.email.casefold()
+        ]
+
+    if status:
+        clients_list = [client for client in clients_list if client.status == status]
+
+    statuses = sorted({client.status for client in Client.query.all()})
+
     return render_template(
         "clients.html",
         clients=clients_list,
+        search=search,
+        selected_status=status,
+        statuses=statuses,
         breadcrumbs=[
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Клиенты"},

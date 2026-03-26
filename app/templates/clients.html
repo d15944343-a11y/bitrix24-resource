@@ -7,6 +7,28 @@
     <h1>Клиентская база</h1>
     <p>Базовый список клиентов для дальнейшего развития аналитики, сегментации и интеграции с Bitrix24.</p>
 
+    <form class="filter-form" method="get">
+        <label class="form-field">
+            <span>Поиск по ФИО или email</span>
+            <input type="text" name="search" value="{{ search }}" placeholder="Введите имя или email">
+        </label>
+
+        <label class="form-field">
+            <span>Статус</span>
+            <select name="status">
+                <option value="">Все статусы</option>
+                {% for status in statuses %}
+                <option value="{{ status }}" {% if status == selected_status %}selected{% endif %}>{{ status }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <div class="filter-actions">
+            <button class="button" type="submit">Применить</button>
+            <a class="button button--secondary" href="{{ url_for('main.clients') }}">Сбросить</a>
+        </div>
+    </form>
+
     <div class="table-wrap">
         <table class="data-table">
             <thead>
