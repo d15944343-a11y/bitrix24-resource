@@ -4,7 +4,40 @@
 
 {% block content %}
 <section class="card">
-    <h1>Рекомендации</h1>
-    <p>В этом разделе будут представлены рекомендации по работе с клиентской базой на основе собранной аналитики.</p>
+    <h1>Рекомендации по работе с клиентской базой</h1>
+    <p>На текущем этапе рекомендации формируются по статусам клиентов и помогают менеджеру выбирать следующий рабочий шаг.</p>
+
+    {% for status, clients in grouped_clients.items() %}
+    <div class="segment-block">
+        <h2>{{ status }}</h2>
+        <div class="recommendation-card">
+            <strong>{{ recommendation_rules.get(status, {}).get('title', 'Рекомендация не задана') }}</strong>
+            <p>{{ recommendation_rules.get(status, {}).get('description', 'Для этого сегмента пока нет отдельного правила.') }}</p>
+        </div>
+
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ФИО</th>
+                        <th>Email</th>
+                        <th>Город</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in clients %}
+                    <tr>
+                        <td>{{ client.id }}</td>
+                        <td>{{ client.full_name }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.city }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
 </section>
 {% endblock %}

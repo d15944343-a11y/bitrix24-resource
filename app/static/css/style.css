@@ -240,6 +240,18 @@ body {
     margin-bottom: 14px;
 }
 
+.recommendation-card {
+    margin-bottom: 16px;
+    padding: 18px;
+    border-radius: 12px;
+    background-color: #fff7ed;
+    border: 1px solid #fed7aa;
+}
+
+.recommendation-card p {
+    margin: 10px 0 0;
+}
+
 .breadcrumbs {
     display: flex;
     flex-wrap: wrap;

@@ -611,8 +611,38 @@ def admin_user_detail(user_id: int):
 
 @main_bp.route("/recommendations")
 def recommendations():
+    clients = Client.query.order_by(Client.status.asc(), Client.full_name.asc()).all()
+    recommendation_rules = {
+        "Новый": {
+            "title": "Связаться с новым клиентом в приоритетном порядке",
+            "description": "Для новых клиентов важно быстро выполнить первый контакт и уточнить потребности.",
+        },
+        "В работе": {
+            "title": "Контролировать текущие переговоры",
+            "description": "По клиентам в работе рекомендуется регулярно обновлять статус и фиксировать следующий шаг.",
+        },
+        "Постоянный": {
+            "title": "Поддерживать лояльность и предлагать дополнительные услуги",
+            "description": "Постоянным клиентам полезно предлагать повторные продажи и персональные предложения.",
+        },
+        "Неактивный": {
+            "title": "Запустить сценарий возврата клиента",
+            "description": "Для неактивных клиентов стоит подготовить реактивационное предложение или персональное касание.",
+        },
+        "Импортирован из Bitrix24": {
+            "title": "Проверить полноту импортированных данных",
+            "description": "После импорта рекомендуется уточнить контактные данные и назначить дальнейший статус работы.",
+        },
+    }
+
+    grouped_clients = {}
+    for client in clients:
+        grouped_clients.setdefault(client.status, []).append(client)
+
     return render_template(
         "recommendations.html",
+        grouped_clients=grouped_clients,
+        recommendation_rules=recommendation_rules,
         breadcrumbs=[
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Рекомендации"},
