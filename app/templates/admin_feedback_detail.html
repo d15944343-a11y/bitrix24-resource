@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Карточка обращения | {{ config.APP_NAME }}{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Карточка обращения</h1>
+
+    <div class="section-actions">
+        <a class="button button--secondary" href="{{ url_for('main.admin_feedback') }}">Вернуться к списку обращений</a>
+    </div>
+
+    <div class="profile-grid">
+        <div class="profile-item">
+            <span class="profile-item__label">ID</span>
+            <span class="profile-item__value">{{ message.id }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Имя</span>
+            <span class="profile-item__value">{{ message.name }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Email</span>
+            <span class="profile-item__value">{{ message.email }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Тема</span>
+            <span class="profile-item__value">{{ message.subject }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Сообщение</span>
+            <span class="profile-item__value">{{ message.message }}</span>
+        </div>
+    </div>
+</section>
+{% endblock %}

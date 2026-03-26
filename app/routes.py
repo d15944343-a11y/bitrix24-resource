@@ -297,6 +297,22 @@ def admin_feedback():
     )
 
 
+@main_bp.route("/admin/feedback/<int:message_id>")
+@role_required("Администратор")
+def admin_feedback_detail(message_id: int):
+    message = FeedbackMessage.query.get_or_404(message_id)
+    return render_template(
+        "admin_feedback_detail.html",
+        message=message,
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Панель администратора", "endpoint": "main.admin_panel"},
+            {"title": "Обращения", "endpoint": "main.admin_feedback"},
+            {"title": "Карточка обращения"},
+        ],
+    )
+
+
 @main_bp.route("/admin/users/<int:user_id>", methods=["GET", "POST"])
 @role_required("Администратор")
 def admin_user_detail(user_id: int):

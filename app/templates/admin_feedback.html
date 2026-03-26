@@ -26,7 +26,11 @@
                 {% for message in messages %}
                 <tr>
                     <td>{{ message.id }}</td>
-                    <td>{{ message.name }}</td>
+                    <td>
+                        <a class="table-link" href="{{ url_for('main.admin_feedback_detail', message_id=message.id) }}">
+                            {{ message.name }}
+                        </a>
+                    </td>
                     <td>{{ message.email }}</td>
                     <td>{{ message.subject }}</td>
                     <td>{{ message.message }}</td>
