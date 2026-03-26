@@ -51,8 +51,23 @@ def contacts():
 
 @main_bp.route("/analytics")
 def analytics():
+    clients = Client.query.all()
+    total_clients = len(clients)
+    active_clients = sum(1 for client in clients if client.status in {"Новый", "В работе", "Постоянный", "Импортирован из Bitrix24"})
+    inactive_clients = sum(1 for client in clients if client.status == "Неактивный")
+    unique_cities = len({client.city for client in clients})
+
+    status_counts = {}
+    for client in clients:
+        status_counts[client.status] = status_counts.get(client.status, 0) + 1
+
     return render_template(
         "analytics.html",
+        total_clients=total_clients,
+        active_clients=active_clients,
+        inactive_clients=inactive_clients,
+        unique_cities=unique_cities,
+        status_counts=status_counts,
         breadcrumbs=[
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Аналитика"},

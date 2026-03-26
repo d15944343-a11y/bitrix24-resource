@@ -203,6 +203,35 @@ body {
     color: #991b1b;
 }
 
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    padding: 20px;
+    border-radius: 14px;
+    background-color: #f8fbff;
+    border: 1px solid #d9e2ec;
+}
+
+.stat-card__label {
+    display: block;
+    margin-bottom: 10px;
+    color: #486581;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.stat-card__value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #102a43;
+}
+
 .breadcrumbs {
     display: flex;
     flex-wrap: wrap;

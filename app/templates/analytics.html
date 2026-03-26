@@ -5,6 +5,44 @@
 {% block content %}
 <section class="card">
     <h1>Аналитика клиентской базы</h1>
-    <p>Здесь будет размещаться дашборд с ключевыми показателями клиентской базы и динамикой работы с CRM-данными.</p>
+    <p>Базовый дашборд по локальной базе клиентов. В следующих этапах здесь появятся более сложные отчеты и сегментация.</p>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-card__label">Всего клиентов</span>
+            <span class="stat-card__value">{{ total_clients }}</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-card__label">Активные клиенты</span>
+            <span class="stat-card__value">{{ active_clients }}</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-card__label">Неактивные клиенты</span>
+            <span class="stat-card__value">{{ inactive_clients }}</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-card__label">Уникальные города</span>
+            <span class="stat-card__value">{{ unique_cities }}</span>
+        </div>
+    </div>
+
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Статус клиента</th>
+                    <th>Количество</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for status, count in status_counts.items() %}
+                <tr>
+                    <td>{{ status }}</td>
+                    <td>{{ count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </section>
 {% endblock %}
