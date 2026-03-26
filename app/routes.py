@@ -32,3 +32,47 @@ def contacts():
             {"title": "Контакты"},
         ],
     )
+
+
+@main_bp.route("/analytics")
+def analytics():
+    return render_template(
+        "analytics.html",
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Аналитика"},
+        ],
+    )
+
+
+@main_bp.route("/segments")
+def segments():
+    return render_template(
+        "segments.html",
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Сегментация"},
+        ],
+    )
+
+
+@main_bp.route("/reports")
+def reports():
+    return render_template(
+        "reports.html",
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Отчеты"},
+        ],
+    )
+
+
+@main_bp.route("/integration")
+def integration():
+    return render_template(
+        "integration.html",
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Интеграция Bitrix24"},
+        ],
+    )
