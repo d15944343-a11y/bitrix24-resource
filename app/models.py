@@ -1,3 +1,5 @@
+from werkzeug.security import check_password_hash, generate_password_hash
+
 from .extensions import db
 
 
@@ -29,6 +31,12 @@ class User(BaseModel):
     role_id = db.Column(db.Integer, db.ForeignKey("roles.id"), nullable=False)
 
     role = db.relationship("Role", back_populates="users")
+
+    def set_password(self, raw_password: str) -> None:
+        self.password = generate_password_hash(raw_password)
+
+    def check_password(self, raw_password: str) -> bool:
+        return check_password_hash(self.password, raw_password)
 
     def __repr__(self) -> str:
         return f"<User {self.email}>"

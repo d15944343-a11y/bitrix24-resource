@@ -639,10 +639,10 @@ def admin_user_create():
         user = User(
             full_name=full_name,
             email=email,
-            password=password,
             role_id=role_id,
             is_active=is_active,
         )
+        user.set_password(password)
         db.session.add(user)
         db.session.commit()
 
@@ -852,7 +852,7 @@ def login():
             )
 
         user = User.query.filter_by(email=email, is_active=True).first()
-        if user and user.password == password:
+        if user and user.check_password(password):
             session["user_id"] = user.id
             session["user_name"] = user.full_name
             session["role_name"] = user.role.name
