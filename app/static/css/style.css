@@ -138,6 +138,9 @@ body {
 .section-actions {
     margin-top: 20px;
     margin-bottom: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
 .edit-form {
@@ -166,6 +169,11 @@ body {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
+}
+
+.button--danger {
+    background-color: #b91c1c;
+    color: #ffffff;
 }
 
 .breadcrumbs {

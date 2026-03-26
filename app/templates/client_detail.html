@@ -9,6 +9,9 @@
     <div class="section-actions">
         <a class="button button--secondary" href="{{ url_for('main.clients') }}">Вернуться к списку клиентов</a>
         <a class="button" href="{{ url_for('main.client_edit', client_id=client.id) }}">Редактировать клиента</a>
+        <form method="post" action="{{ url_for('main.client_delete', client_id=client.id) }}">
+            <button class="button button--danger" type="submit">Удалить клиента</button>
+        </form>
     </div>
 
     <div class="profile-grid">

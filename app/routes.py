@@ -233,6 +233,19 @@ def client_edit(client_id: int):
     )
 
 
+@main_bp.route("/clients/<int:client_id>/delete", methods=["POST"])
+@login_required
+def client_delete(client_id: int):
+    client = Client.query.get_or_404(client_id)
+    client_name = client.full_name
+
+    db.session.delete(client)
+    db.session.commit()
+
+    flash(f"Клиент {client_name} удален.", "success")
+    return redirect(url_for("main.clients"))
+
+
 @main_bp.route("/integration")
 def integration():
     return render_template(
