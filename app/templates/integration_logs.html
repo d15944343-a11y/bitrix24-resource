@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Журнал интеграции | {{ config.APP_NAME }}{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Журнал интеграции Bitrix24</h1>
+    <p>Полная история операций, связанных с проверкой подключения и импортом данных.</p>
+
+    <div class="section-actions">
+        <a class="button button--secondary" href="{{ url_for('main.integration') }}">Вернуться к настройкам интеграции</a>
+    </div>
+
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Сервис</th>
+                    <th>Операция</th>
+                    <th>Статус</th>
+                    <th>Сообщение</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
+                <tr>
+                    <td>{{ log.id }}</td>
+                    <td>{{ log.service_name }}</td>
+                    <td>{{ log.operation }}</td>
+                    <td>{{ log.status }}</td>
+                    <td>{{ log.message }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

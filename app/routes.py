@@ -439,6 +439,21 @@ def integration_import_clients():
     return redirect(url_for("main.integration"))
 
 
+@main_bp.route("/integration/logs")
+@login_required
+def integration_logs():
+    logs = IntegrationLog.query.filter_by(service_name="bitrix24").order_by(IntegrationLog.id.desc()).all()
+    return render_template(
+        "integration_logs.html",
+        logs=logs,
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Интеграция Bitrix24", "endpoint": "main.integration"},
+            {"title": "Журнал операций"},
+        ],
+    )
+
+
 @main_bp.route("/dashboard")
 @login_required
 def dashboard():
