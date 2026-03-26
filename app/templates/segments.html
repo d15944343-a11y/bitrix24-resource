@@ -5,6 +5,34 @@
 {% block content %}
 <section class="card">
     <h1>Сегментация клиентов</h1>
-    <p>Этот раздел будет использоваться для группировки клиентов по заданным правилам и аналитическим признакам.</p>
+    <p>На текущем этапе клиенты сегментируются по статусу. В дальнейшем сюда можно добавить RFM-анализ, приоритетность и рекомендации по работе.</p>
+
+    {% for segment_name, clients in segments_map.items() %}
+    <div class="segment-block">
+        <h2>{{ segment_name }}</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>ФИО</th>
+                        <th>Email</th>
+                        <th>Город</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in clients %}
+                    <tr>
+                        <td>{{ client.id }}</td>
+                        <td>{{ client.full_name }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.city }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
 </section>
 {% endblock %}

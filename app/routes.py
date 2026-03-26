@@ -82,8 +82,15 @@ def analytics():
 
 @main_bp.route("/segments")
 def segments():
+    clients = Client.query.order_by(Client.status.asc(), Client.full_name.asc()).all()
+    segments_map = {}
+
+    for client in clients:
+        segments_map.setdefault(client.status, []).append(client)
+
     return render_template(
         "segments.html",
+        segments_map=segments_map,
         breadcrumbs=[
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Сегментация"},

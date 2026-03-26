@@ -232,6 +232,14 @@ body {
     color: #102a43;
 }
 
+.segment-block {
+    margin-top: 28px;
+}
+
+.segment-block h2 {
+    margin-bottom: 14px;
+}
+
 .breadcrumbs {
     display: flex;
     flex-wrap: wrap;
