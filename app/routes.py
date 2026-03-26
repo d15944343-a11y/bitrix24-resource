@@ -97,8 +97,10 @@ def dashboard():
 @main_bp.route("/admin")
 @role_required("Администратор")
 def admin_panel():
+    users = User.query.order_by(User.id.asc()).all()
     return render_template(
         "admin.html",
+        users=users,
         breadcrumbs=[
             {"title": "Главная", "endpoint": "main.index"},
             {"title": "Панель администратора"},

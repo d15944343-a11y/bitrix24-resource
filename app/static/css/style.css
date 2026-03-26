@@ -171,6 +171,34 @@ body {
     font-weight: 600;
 }
 
+.table-wrap {
+    margin-top: 24px;
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 640px;
+}
+
+.data-table th,
+.data-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #d9e2ec;
+    text-align: left;
+}
+
+.data-table th {
+    background-color: #f0f4f8;
+    color: #243b53;
+    font-size: 14px;
+}
+
+.data-table td {
+    background-color: #ffffff;
+}
+
 h1 {
     margin-bottom: 16px;
 }
