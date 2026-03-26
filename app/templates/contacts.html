@@ -5,6 +5,30 @@
 {% block content %}
 <section class="card">
     <h1>Контакты</h1>
-    <p>Здесь позже будет размещена форма обратной связи и контактная информация.</p>
+    <p>Используйте форму обратной связи для отправки сообщения администратору системы.</p>
+
+    <form class="auth-form" method="post">
+        <label class="form-field">
+            <span>Имя</span>
+            <input type="text" name="name" value="{{ form_data.get('name', '') }}" required>
+        </label>
+
+        <label class="form-field">
+            <span>Email</span>
+            <input type="email" name="email" value="{{ form_data.get('email', '') }}" required>
+        </label>
+
+        <label class="form-field">
+            <span>Тема</span>
+            <input type="text" name="subject" value="{{ form_data.get('subject', '') }}" required>
+        </label>
+
+        <label class="form-field">
+            <span>Сообщение</span>
+            <textarea name="message" rows="5" required>{{ form_data.get('message', '') }}</textarea>
+        </label>
+
+        <button class="button" type="submit">Отправить сообщение</button>
+    </form>
 </section>
 {% endblock %}

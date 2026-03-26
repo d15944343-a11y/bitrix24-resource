@@ -107,6 +107,15 @@ body {
     font-size: 16px;
 }
 
+.form-field textarea {
+    padding: 12px 14px;
+    border: 1px solid #bcccdc;
+    border-radius: 10px;
+    font-size: 16px;
+    resize: vertical;
+    font-family: inherit;
+}
+
 .form-field select {
     padding: 12px 14px;
     border: 1px solid #bcccdc;

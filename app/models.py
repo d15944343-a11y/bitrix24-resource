@@ -45,3 +45,15 @@ class Client(BaseModel):
 
     def __repr__(self) -> str:
         return f"<Client {self.email}>"
+
+
+class FeedbackMessage(BaseModel):
+    __tablename__ = "feedback_messages"
+
+    name = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), nullable=False)
+    subject = db.Column(db.String(200), nullable=False)
+    message = db.Column(db.Text, nullable=False)
+
+    def __repr__(self) -> str:
+        return f"<FeedbackMessage {self.email}>"

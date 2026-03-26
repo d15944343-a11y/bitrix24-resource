@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for
 from .auth import login_required, role_required
 from .extensions import db
-from .models import Client, Role, User
+from .models import Client, FeedbackMessage, Role, User
 
 
 main_bp = Blueprint("main", __name__)
@@ -26,12 +26,40 @@ def about():
     )
 
 
-@main_bp.route("/contacts")
+@main_bp.route("/contacts", methods=["GET", "POST"])
 def contacts():
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        subject = request.form.get("subject", "").strip()
+        message = request.form.get("message", "").strip()
+
+        if not all([name, email, subject, message]):
+            flash("Заполните все поля формы обратной связи.", "error")
+            return render_template(
+                "contacts.html",
+                form_data=request.form,
+                breadcrumbs=[
+                    {"title": "Контакты"},
+                ],
+            )
+
+        feedback = FeedbackMessage(
+            name=name,
+            email=email,
+            subject=subject,
+            message=message,
+        )
+        db.session.add(feedback)
+        db.session.commit()
+
+        flash("Сообщение отправлено и сохранено в системе.", "success")
+        return redirect(url_for("main.contacts"))
+
     return render_template(
         "contacts.html",
+        form_data={},
         breadcrumbs=[
-            {"title": "Главная", "endpoint": "main.index"},
             {"title": "Контакты"},
         ],
     )

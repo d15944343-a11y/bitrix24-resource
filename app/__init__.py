@@ -17,9 +17,12 @@ def create_app() -> Flask:
         load_current_user()
 
     from .routes import main_bp
-    from .models import Client, Role, User
+    from .models import Client, FeedbackMessage, Role, User
 
     app.register_blueprint(main_bp)
+
+    with app.app_context():
+        db.create_all()
 
     @app.cli.command("init-db")
     def init_db() -> None:
