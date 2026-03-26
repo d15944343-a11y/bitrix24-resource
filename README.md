@@ -36,7 +36,13 @@ python app.py
 flask --app app init-db
 ```
 
-5. Открыть в браузере:
+5. Добавить стартовые роли и учетные записи:
+
+```bash
+flask --app app seed-users
+```
+
+6. Открыть в браузере:
 
 ```text
 http://127.0.0.1:5000/
