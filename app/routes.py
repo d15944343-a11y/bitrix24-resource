@@ -103,6 +103,65 @@ def clients():
     )
 
 
+@main_bp.route("/clients/create", methods=["GET", "POST"])
+@login_required
+def client_create():
+    if request.method == "POST":
+        full_name = request.form.get("full_name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        phone = request.form.get("phone", "").strip()
+        city = request.form.get("city", "").strip()
+        status = request.form.get("status", "").strip()
+
+        if not all([full_name, email, phone, city, status]):
+            flash("Заполните все поля формы.", "error")
+            return render_template(
+                "client_create.html",
+                form_data=request.form,
+                breadcrumbs=[
+                    {"title": "Главная", "endpoint": "main.index"},
+                    {"title": "Клиенты", "endpoint": "main.clients"},
+                    {"title": "Новый клиент"},
+                ],
+            )
+
+        existing_client = Client.query.filter_by(email=email).first()
+        if existing_client is not None:
+            flash("Клиент с таким email уже существует.", "error")
+            return render_template(
+                "client_create.html",
+                form_data=request.form,
+                breadcrumbs=[
+                    {"title": "Главная", "endpoint": "main.index"},
+                    {"title": "Клиенты", "endpoint": "main.clients"},
+                    {"title": "Новый клиент"},
+                ],
+            )
+
+        client = Client(
+            full_name=full_name,
+            email=email,
+            phone=phone,
+            city=city,
+            status=status,
+        )
+        db.session.add(client)
+        db.session.commit()
+
+        flash("Клиент успешно добавлен.", "success")
+        return redirect(url_for("main.client_detail", client_id=client.id))
+
+    return render_template(
+        "client_create.html",
+        form_data={},
+        breadcrumbs=[
+            {"title": "Главная", "endpoint": "main.index"},
+            {"title": "Клиенты", "endpoint": "main.clients"},
+            {"title": "Новый клиент"},
+        ],
+    )
+
+
 @main_bp.route("/clients/<int:client_id>")
 @login_required
 def client_detail(client_id: int):

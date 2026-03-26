@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Новый клиент | {{ config.APP_NAME }}{% endblock %}
+
+{% block content %}
+<section class="card auth-card">
+    <h1>Добавление клиента</h1>
+    <p>Заполните основные данные клиента для сохранения в локальной базе проекта.</p>
+
+    <form class="auth-form" method="post">
+        <label class="form-field">
+            <span>ФИО</span>
+            <input type="text" name="full_name" value="{{ form_data.get('full_name', '') }}" required>
+        </label>
+
+        <label class="form-field">
+            <span>Email</span>
+            <input type="email" name="email" value="{{ form_data.get('email', '') }}" required>
+        </label>
+
+        <label class="form-field">
+            <span>Телефон</span>
+            <input type="text" name="phone" value="{{ form_data.get('phone', '') }}" required>
+        </label>
+
+        <label class="form-field">
+            <span>Город</span>
+            <input type="text" name="city" value="{{ form_data.get('city', '') }}" required>
+        </label>
+
+        <label class="form-field">
+            <span>Статус</span>
+            <input type="text" name="status" value="{{ form_data.get('status', '') }}" required>
+        </label>
+
+        <button class="button" type="submit">Сохранить клиента</button>
+    </form>
+</section>
+{% endblock %}
