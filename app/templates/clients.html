@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 
-{% block title %}Клиенты | {{ config.APP_NAME }}{% endblock %}
+{% block title %}CRM-клиенты | {{ config.APP_NAME }}{% endblock %}
 
 {% block content %}
 <section class="card">
-    <h1>Клиентская база</h1>
-    <p>Базовый список клиентов для дальнейшего развития аналитики, сегментации и интеграции с Bitrix24.</p>
+    <h1>CRM-клиенты</h1>
+    <p>Карточки содержат признаки для прогноза оттока и автоматически ранжируются активной ML-моделью.</p>
 
     <div class="section-actions">
         <a class="button" href="{{ url_for('main.client_create') }}">Добавить клиента</a>
     </div>
 
-    <form class="filter-form" method="get">
+    <form class="filter-form filter-form--wide" method="get">
         <label class="form-field">
-            <span>Поиск по ФИО или email</span>
-            <input type="text" name="search" value="{{ search }}" placeholder="Введите имя или email">
+            <span>Поиск по ФИО, email или коду</span>
+            <input type="text" name="search" value="{{ search }}" placeholder="Введите имя, email или код">
         </label>
 
         <label class="form-field">
@@ -23,6 +23,16 @@
                 <option value="">Все статусы</option>
                 {% for status in statuses %}
                 <option value="{{ status }}" {% if status == selected_status %}selected{% endif %}>{{ status }}</option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label class="form-field">
+            <span>Риск</span>
+            <select name="risk">
+                <option value="">Все уровни</option>
+                {% for risk_level in risk_levels %}
+                <option value="{{ risk_level }}" {% if risk_level == selected_risk %}selected{% endif %}>{{ risk_level }}</option>
                 {% endfor %}
             </select>
         </label>
@@ -37,27 +47,33 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>ФИО</th>
-                    <th>Email</th>
-                    <th>Телефон</th>
-                    <th>Город</th>
+                    <th>Код</th>
+                    <th>Клиент</th>
                     <th>Статус</th>
+                    <th>Контракт</th>
+                    <th>Выручка/мес.</th>
+                    <th>Риск</th>
+                    <th>Вероятность</th>
                 </tr>
             </thead>
             <tbody>
                 {% for client in clients %}
                 <tr>
-                    <td>{{ client.id }}</td>
+                    <td>{{ client.customer_code }}</td>
                     <td>
                         <a class="table-link" href="{{ url_for('main.client_detail', client_id=client.id) }}">
                             {{ client.full_name }}
                         </a>
                     </td>
-                    <td>{{ client.email }}</td>
-                    <td>{{ client.phone }}</td>
-                    <td>{{ client.city }}</td>
                     <td>{{ client.status }}</td>
+                    <td>{{ client.contract_type }}</td>
+                    <td>{{ "%.2f"|format(client.monthly_charges) }}</td>
+                    <td>{{ client.risk_level or "Не рассчитан" }}</td>
+                    <td>{{ "%.1f"|format((client.churn_probability or 0) * 100) }}%</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7">Клиенты по заданным фильтрам не найдены.</td>
                 </tr>
                 {% endfor %}
             </tbody>

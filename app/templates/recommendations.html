@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Рекомендации | {{ config.APP_NAME }}{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>Рекомендации по удержанию клиентов</h1>
+    <p>Рекомендации формируются не по жёсткому статусу, а по вероятности оттока и структуре клиентского профиля.</p>
+
+    {% if active_model %}
+    <p class="note">Активная модель: <strong>{{ active_model.name }}</strong></p>
+    {% endif %}
+
+    {% for section_title, rows in grouped_clients.items() %}
+    <div class="segment-block">
+        <h2>{{ section_title }}</h2>
+        {% for row in rows %}
+        <article class="recommendation-card">
+            <div class="recommendation-card__header">
+                <strong>{{ row.client.full_name }}</strong>
+                <span>{{ row.client.risk_level or "Не рассчитан" }} · {{ "%.1f"|format((row.client.churn_probability or 0) * 100) }}%</span>
+            </div>
+            <p>{{ row.action }}</p>
+            <a class="table-link" href="{{ url_for('main.client_detail', client_id=row.client.id) }}">Открыть карточку клиента</a>
+        </article>
+        {% else %}
+        <p>В этом приоритетном блоке клиентов пока нет.</p>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</section>
+{% endblock %}

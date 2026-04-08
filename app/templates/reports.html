@@ -4,49 +4,114 @@
 
 {% block content %}
 <section class="card">
-    <h1>Отчеты по клиентской базе</h1>
-    <p>В этом разделе собраны базовые сводные отчеты по статусам и географии клиентов.</p>
-
+    <h1>Отчеты и артефакты интеллектуального сервиса</h1>
     <div class="section-actions">
-        <a class="button button--secondary" href="{{ url_for('main.reports_export') }}">Скачать CSV-отчет</a>
+        <a class="button" href="{{ url_for('main.reports_export') }}">Скачать CRM AI-отчет</a>
+        <a class="button button--secondary" href="{{ url_for('main.reports_export_predictions') }}">Скачать последний прогноз</a>
     </div>
 
+    <div class="stats-grid">
+        {% for label, value in risk_counts.items() %}
+        <div class="stat-card">
+            <span class="stat-card__label">{{ label }} риск</span>
+            <span class="stat-card__value">{{ value }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="grid-layout">
+    <article class="card">
+        <h2>Реестр датасетов</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Источник</th>
+                        <th>Строк</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dataset in datasets %}
+                    <tr>
+                        <td>{{ dataset.name }}</td>
+                        <td>{{ dataset.source_kind }}</td>
+                        <td>{{ dataset.row_count }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3">Пока нет зарегистрированных датасетов.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="card">
+        <h2>Реестр моделей</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Модель</th>
+                        <th>Алгоритм</th>
+                        <th>Accuracy</th>
+                        <th>Активна</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for model in models %}
+                    <tr>
+                        <td>{{ model.name }}</td>
+                        <td>{{ model.algorithm }}</td>
+                        <td>{{ "%.3f"|format(model.accuracy or 0) }}</td>
+                        <td>{{ "Да" if model.is_active else "Нет" }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">Пока нет обученных моделей.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>
+
+<section class="card">
+    <h2>История запусков прогнозирования</h2>
     <div class="table-wrap">
         <table class="data-table">
             <thead>
                 <tr>
-                    <th>Статус</th>
-                    <th>Количество клиентов</th>
+                    <th>Дата</th>
+                    <th>Объект</th>
+                    <th>Строк</th>
+                    <th>Средняя вероятность</th>
+                    <th>Высокий риск</th>
                 </tr>
             </thead>
             <tbody>
-                {% for status, count in status_counts.items() %}
+                {% for run in prediction_runs %}
                 <tr>
-                    <td>{{ status }}</td>
-                    <td>{{ count }}</td>
+                    <td>{{ run.created_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                    <td>{{ run.scope_name }}</td>
+                    <td>{{ run.rows_scored }}</td>
+                    <td>{{ "%.1f"|format(run.avg_probability * 100) }}%</td>
+                    <td>{{ run.high_risk_count }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">История запусков пока пуста.</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-
-    <div class="table-wrap">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Город</th>
-                    <th>Количество клиентов</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for city, count in city_counts.items() %}
-                <tr>
-                    <td>{{ city }}</td>
-                    <td>{{ count }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    {% if latest_run %}
+    <p class="note">Последний запуск прогноза сохранён в файле: {{ latest_run.file_path }}</p>
+    {% endif %}
 </section>
 {% endblock %}

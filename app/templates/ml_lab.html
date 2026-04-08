@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}ML-лаборатория | {{ config.APP_NAME }}{% endblock %}
+
+{% block content %}
+<section class="card">
+    <h1>ML-лаборатория</h1>
+    <p>Здесь выполняются загрузка датасетов, обучение модели, переключение артефактов и запуск прогноза по CRM-клиентам.</p>
+
+    <div class="grid-layout">
+        <article class="inner-card">
+            <h2>Загрузка датасета</h2>
+            <form class="auth-form" method="post" action="{{ url_for('main.ml_upload_dataset') }}" enctype="multipart/form-data">
+                <label class="form-field">
+                    <span>Локальный CSV-файл</span>
+                    <input type="file" name="dataset_file" accept=".csv" required>
+                </label>
+                <button class="button" type="submit">Загрузить CSV</button>
+            </form>
+        </article>
+
+        <article class="inner-card">
+            <h2>Импорт по ссылке</h2>
+            <form class="auth-form" method="post" action="{{ url_for('main.ml_import_url') }}">
+                <label class="form-field">
+                    <span>HTTP/HTTPS ссылка на CSV</span>
+                    <input type="url" name="source_url" placeholder="https://example.com/dataset.csv" required>
+                </label>
+                <button class="button" type="submit">Подключить внешний датасет</button>
+            </form>
+        </article>
+    </div>
+</section>
+
+<section class="grid-layout">
+    <article class="card">
+        <h2>Обучение модели</h2>
+        <form class="auth-form" method="post" action="{{ url_for('main.ml_train') }}">
+            <label class="form-field">
+                <span>Датасет</span>
+                <select name="dataset_id">
+                    {% for dataset in datasets %}
+                    <option value="{{ dataset.id }}">{{ dataset.name }} · {{ dataset.row_count }} строк</option>
+                    {% endfor %}
+                </select>
+            </label>
+
+            <label class="form-field">
+                <span>Алгоритм</span>
+                <select name="algorithm">
+                    <option value="random_forest">Random Forest (production)</option>
+                    <option value="logistic_regression">Logistic Regression</option>
+                </select>
+            </label>
+
+            <button class="button" type="submit">Обучить и сохранить модель</button>
+        </form>
+    </article>
+
+    <article class="card">
+        <h2>Управление моделью</h2>
+        <form class="auth-form" method="post" action="{{ url_for('main.ml_activate_model') }}">
+            <label class="form-field">
+                <span>Сделать активной</span>
+                <select name="model_id">
+                    {% for model in models %}
+                    <option value="{{ model.id }}" {% if active_model and model.id == active_model.id %}selected{% endif %}>
+                        {{ model.name }} · {{ model.algorithm }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </label>
+            <button class="button button--secondary" type="submit">Активировать модель</button>
+        </form>
+
+        <form class="auth-form" method="post" action="{{ url_for('main.ml_predict_clients') }}">
+            <button class="button" type="submit">Пересчитать прогноз для CRM-клиентов</button>
+        </form>
+    </article>
+</section>
+
+<section class="grid-layout">
+    <article class="card">
+        <h2>Текущие метрики</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-card__label">Accuracy</span>
+                <span class="stat-card__value">{{ "%.3f"|format(current_metrics.get('accuracy', 0)) }}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__label">F1-score</span>
+                <span class="stat-card__value">{{ "%.3f"|format(current_metrics.get('f1_score', 0)) }}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__label">ROC-AUC</span>
+                <span class="stat-card__value">{{ "%.3f"|format(current_metrics.get('roc_auc', 0)) }}</span>
+            </div>
+        </div>
+
+        {% if feature_importances %}
+        <div class="importance-list">
+            {% for item in feature_importances %}
+            <div class="importance-row">
+                <span>{{ item.feature }}</span>
+                <div class="importance-row__bar">
+                    <span style="width: {{ (item.value * 100)|round(1) }}%"></span>
+                </div>
+                <strong>{{ "%.3f"|format(item.value) }}</strong>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </article>
+
+    <article class="card">
+        <h2>Предпросмотр датасета</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        {% for header in preview_headers %}
+                        <th>{{ header }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in preview_rows %}
+                    <tr>
+                        {% for header in preview_headers %}
+                        <td>{{ row.get(header) }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="{{ preview_headers|length or 1 }}">Нет доступного датасета для предпросмотра.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+</section>
+
+<section class="grid-layout">
+    <article class="card">
+        <h2>Реестр датасетов</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Источник</th>
+                        <th>Строк</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dataset in datasets %}
+                    <tr>
+                        <td>{{ dataset.name }}</td>
+                        <td>{{ dataset.source_kind }}</td>
+                        <td>{{ dataset.row_count }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3">Пока нет датасетов.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="card">
+        <h2>Сохранённые модели</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Алгоритм</th>
+                        <th>Accuracy</th>
+                        <th>Активна</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for model in models %}
+                    <tr>
+                        <td>{{ model.name }}</td>
+                        <td>{{ model.algorithm }}</td>
+                        <td>{{ "%.3f"|format(model.accuracy or 0) }}</td>
+                        <td>{{ "Да" if model.is_active else "Нет" }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">Пока нет сохранённых моделей.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if latest_run %}
+        <p class="note">Последний прогон CRM-клиентов: {{ latest_run.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+        {% endif %}
+    </article>
+</section>
+{% endblock %}

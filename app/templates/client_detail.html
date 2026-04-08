@@ -14,11 +14,26 @@
         </form>
     </div>
 
-    <div class="profile-grid">
-        <div class="profile-item">
-            <span class="profile-item__label">ID</span>
-            <span class="profile-item__value">{{ client.id }}</span>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-card__label">Код клиента</span>
+            <span class="stat-card__value stat-card__value--small">{{ client.customer_code }}</span>
         </div>
+        <div class="stat-card">
+            <span class="stat-card__label">Риск оттока</span>
+            <span class="stat-card__value stat-card__value--small">{{ client.risk_level or "Не рассчитан" }}</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-card__label">Вероятность</span>
+            <span class="stat-card__value">{{ "%.1f"|format((client.churn_probability or 0) * 100) }}%</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-card__label">Решение модели</span>
+            <span class="stat-card__value stat-card__value--small">{{ client.churn_prediction or "Не рассчитано" }}</span>
+        </div>
+    </div>
+
+    <div class="profile-grid">
         <div class="profile-item">
             <span class="profile-item__label">ФИО</span>
             <span class="profile-item__value">{{ client.full_name }}</span>
@@ -39,6 +54,39 @@
             <span class="profile-item__label">Статус</span>
             <span class="profile-item__value">{{ client.status }}</span>
         </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Контракт</span>
+            <span class="profile-item__value">{{ client.contract_type }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Способ оплаты</span>
+            <span class="profile-item__value">{{ client.payment_method }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Интернет-услуга</span>
+            <span class="profile-item__value">{{ client.internet_service }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Срок обслуживания</span>
+            <span class="profile-item__value">{{ client.tenure_months }} мес.</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Ежемесячная выручка</span>
+            <span class="profile-item__value">{{ "%.2f"|format(client.monthly_charges) }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Накопленная выручка</span>
+            <span class="profile-item__value">{{ "%.2f"|format(client.total_charges) }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Подключено сервисов</span>
+            <span class="profile-item__value">{{ client.service_count }}</span>
+        </div>
+    </div>
+
+    <div class="recommendation-card">
+        <strong>Следующее действие менеджера</strong>
+        <p>{{ next_action }}</p>
     </div>
 </section>
 {% endblock %}
