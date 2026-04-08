@@ -5,10 +5,36 @@
 {% block content %}
 <section class="card">
     <h1>Личный кабинет</h1>
-    <p>Этот раздел станет основой для персональной рабочей области пользователя с доступом к аналитике и данным CRM.</p>
-    <p><strong>Текущий пользователь:</strong> {{ user.full_name }}</p>
-    <p><strong>Роль:</strong> {{ user.role.name }}</p>
-    <p><strong>Email:</strong> {{ user.email }}</p>
-    <a class="button button--secondary" href="{{ url_for('main.profile') }}">Открыть профиль</a>
+    <div class="profile-grid">
+        <div class="profile-item">
+            <span class="profile-item__label">Пользователь</span>
+            <span class="profile-item__value">{{ user.full_name }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Роль</span>
+            <span class="profile-item__value">{{ user.role.name }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Email</span>
+            <span class="profile-item__value">{{ user.email }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Активная модель</span>
+            <span class="profile-item__value">{{ active_model.name if active_model else "Не выбрана" }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Высокорисковые клиенты</span>
+            <span class="profile-item__value">{{ high_risk_count }}</span>
+        </div>
+        <div class="profile-item">
+            <span class="profile-item__label">Доступные датасеты</span>
+            <span class="profile-item__value">{{ datasets_count }}</span>
+        </div>
+    </div>
+
+    <div class="section-actions">
+        <a class="button" href="{{ url_for('main.ml_lab') }}">Перейти в ML-лабораторию</a>
+        <a class="button button--secondary" href="{{ url_for('main.profile') }}">Открыть профиль</a>
+    </div>
 </section>
 {% endblock %}

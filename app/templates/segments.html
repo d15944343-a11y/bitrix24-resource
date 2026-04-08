@@ -4,8 +4,8 @@
 
 {% block content %}
 <section class="card">
-    <h1>Сегментация клиентов</h1>
-    <p>На текущем этапе клиенты сегментируются по статусу. В дальнейшем сюда можно добавить RFM-анализ, приоритетность и рекомендации по работе.</p>
+    <h1>Сегментация по уровню риска</h1>
+    <p>Клиенты автоматически группируются по вероятности оттока, рассчитанной активной ML-моделью.</p>
 
     {% for segment_name, clients in segments_map.items() %}
     <div class="segment-block">
@@ -14,19 +14,27 @@
             <table class="data-table">
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>ФИО</th>
-                        <th>Email</th>
-                        <th>Город</th>
+                        <th>Клиент</th>
+                        <th>Код</th>
+                        <th>Статус</th>
+                        <th>Вероятность оттока</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for client in clients %}
                     <tr>
-                        <td>{{ client.id }}</td>
-                        <td>{{ client.full_name }}</td>
-                        <td>{{ client.email }}</td>
-                        <td>{{ client.city }}</td>
+                        <td>
+                            <a class="table-link" href="{{ url_for('main.client_detail', client_id=client.id) }}">
+                                {{ client.full_name }}
+                            </a>
+                        </td>
+                        <td>{{ client.customer_code }}</td>
+                        <td>{{ client.status }}</td>
+                        <td>{{ "%.1f"|format((client.churn_probability or 0) * 100) }}%</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4">В этом сегменте пока нет клиентов.</td>
                     </tr>
                     {% endfor %}
                 </tbody>

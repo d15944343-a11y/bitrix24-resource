@@ -3,8 +3,93 @@
 {% block title %}Главная | {{ config.APP_NAME }}{% endblock %}
 
 {% block content %}
-<section class="hero">
-    <h1>Информационный ресурс для анализа клиентской базы</h1>
-    <p>Стартовый каркас дипломного проекта на Flask с базовой конфигурацией, общим шаблоном страниц и первичной навигацией.</p>
+<section class="hero hero--wide">
+    <div class="hero__content">
+        <span class="eyebrow">ВКР · Bitrix24 · Machine Learning</span>
+        <h1>Интеллектуальный CRM-ресурс для обучения модели, оценки качества и прогноза риска оттока</h1>
+        <p>
+            Приложение объединяет загрузку датасетов, обучение ML-модели, сохранение артефактов,
+            применение прогноза к CRM-клиентам и формирование персональных рекомендаций для удержания.
+        </p>
+        <div class="section-actions">
+            <a class="button" href="{{ url_for('main.ml_lab') }}">Открыть ML-лабораторию</a>
+            <a class="button button--secondary" href="{{ url_for('main.analytics') }}">Посмотреть AI-аналитику</a>
+        </div>
+    </div>
+    <div class="hero__panel">
+        <div class="metric-panel">
+            <span class="metric-panel__label">Датасеты</span>
+            <strong>{{ datasets_count }}</strong>
+        </div>
+        <div class="metric-panel">
+            <span class="metric-panel__label">Сохранённые модели</span>
+            <strong>{{ models_count }}</strong>
+        </div>
+        <div class="metric-panel">
+            <span class="metric-panel__label">Запуски прогнозирования</span>
+            <strong>{{ prediction_runs_count }}</strong>
+        </div>
+        <div class="metric-panel">
+            <span class="metric-panel__label">CRM-клиенты</span>
+            <strong>{{ total_clients }}</strong>
+        </div>
+    </div>
+</section>
+
+<section class="grid-layout">
+    <article class="card">
+        <h2>Активная модель</h2>
+        {% if active_model %}
+        <p><strong>{{ active_model.name }}</strong> · {{ active_model.algorithm }}</p>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-card__label">Accuracy</span>
+                <span class="stat-card__value">{{ "%.3f"|format(current_metrics.get('accuracy', 0)) }}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__label">F1-score</span>
+                <span class="stat-card__value">{{ "%.3f"|format(current_metrics.get('f1_score', 0)) }}</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-card__label">ROC-AUC</span>
+                <span class="stat-card__value">{{ "%.3f"|format(current_metrics.get('roc_auc', 0)) }}</span>
+            </div>
+        </div>
+        {% else %}
+        <p>В репозитории пока нет активной модели. Откройте ML-лабораторию и выполните обучение.</p>
+        {% endif %}
+    </article>
+
+    <article class="card">
+        <h2>Клиенты с максимальным риском</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Клиент</th>
+                        <th>Риск</th>
+                        <th>Вероятность</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in top_clients %}
+                    <tr>
+                        <td>
+                            <a class="table-link" href="{{ url_for('main.client_detail', client_id=client.id) }}">
+                                {{ client.full_name }}
+                            </a>
+                        </td>
+                        <td>{{ client.risk_level or "Не рассчитан" }}</td>
+                        <td>{{ "%.1f"|format((client.churn_probability or 0) * 100) }}%</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="3">Пока нет данных для ранжирования клиентов по риску.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
 </section>
 {% endblock %}

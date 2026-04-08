@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Аналитика | {{ config.APP_NAME }}{% endblock %}
+{% block title %}AI-аналитика | {{ config.APP_NAME }}{% endblock %}
 
 {% block content %}
 <section class="card">
-    <h1>Аналитика клиентской базы</h1>
-    <p>Базовый дашборд по локальной базе клиентов. В следующих этапах здесь появятся более сложные отчеты и сегментация.</p>
+    <h1>AI-аналитика клиентской базы</h1>
+    <p>Витрина объединяет операционные CRM-данные и результаты работы модели прогноза оттока.</p>
 
     <div class="stats-grid">
         <div class="stat-card">
@@ -13,55 +13,193 @@
             <span class="stat-card__value">{{ total_clients }}</span>
         </div>
         <div class="stat-card">
-            <span class="stat-card__label">Активные клиенты</span>
-            <span class="stat-card__value">{{ active_clients }}</span>
+            <span class="stat-card__label">Средняя вероятность оттока</span>
+            <span class="stat-card__value">{{ "%.1f"|format(avg_probability * 100) }}%</span>
         </div>
         <div class="stat-card">
-            <span class="stat-card__label">Неактивные клиенты</span>
-            <span class="stat-card__value">{{ inactive_clients }}</span>
+            <span class="stat-card__label">Высокий риск</span>
+            <span class="stat-card__value">{{ high_risk_count }}</span>
         </div>
         <div class="stat-card">
-            <span class="stat-card__label">Уникальные города</span>
-            <span class="stat-card__value">{{ unique_cities }}</span>
+            <span class="stat-card__label">Средний риск</span>
+            <span class="stat-card__value">{{ medium_risk_count }}</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-card__label">Низкий риск</span>
+            <span class="stat-card__value">{{ low_risk_count }}</span>
         </div>
     </div>
+</section>
 
-    <div class="table-wrap">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Статус клиента</th>
-                    <th>Количество</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for status, count in status_counts.items() %}
-                <tr>
-                    <td>{{ status }}</td>
-                    <td>{{ count }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+<section class="grid-layout">
+    <article class="card">
+        <h2>Качество модели</h2>
+        {% if active_model %}
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Метрика</th>
+                        <th>Базовая модель</th>
+                        <th>Активная модель</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Accuracy</td>
+                        <td>{{ "%.3f"|format(baseline_metrics.get('accuracy', 0)) }}</td>
+                        <td>{{ "%.3f"|format(current_metrics.get('accuracy', 0)) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Precision</td>
+                        <td>{{ "%.3f"|format(baseline_metrics.get('precision', 0)) }}</td>
+                        <td>{{ "%.3f"|format(current_metrics.get('precision', 0)) }}</td>
+                    </tr>
+                    <tr>
+                        <td>Recall</td>
+                        <td>{{ "%.3f"|format(baseline_metrics.get('recall', 0)) }}</td>
+                        <td>{{ "%.3f"|format(current_metrics.get('recall', 0)) }}</td>
+                    </tr>
+                    <tr>
+                        <td>F1-score</td>
+                        <td>{{ "%.3f"|format(baseline_metrics.get('f1_score', 0)) }}</td>
+                        <td>{{ "%.3f"|format(current_metrics.get('f1_score', 0)) }}</td>
+                    </tr>
+                    <tr>
+                        <td>ROC-AUC</td>
+                        <td>{{ "%.3f"|format(baseline_metrics.get('roc_auc', 0)) }}</td>
+                        <td>{{ "%.3f"|format(current_metrics.get('roc_auc', 0)) }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p>Активная модель пока не выбрана.</p>
+        {% endif %}
+    </article>
 
-    <div class="table-wrap">
-        <table class="data-table">
-            <thead>
-                <tr>
-                    <th>Город</th>
-                    <th>Количество клиентов</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for city, count in city_counts.items() %}
-                <tr>
-                    <td>{{ city }}</td>
-                    <td>{{ count }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <article class="card">
+        <h2>Матрица ошибок</h2>
+        {% if confusion %}
+        <div class="matrix-grid">
+            <div class="matrix-cell">
+                <span>TN</span>
+                <strong>{{ confusion.get('true_negative', 0) }}</strong>
+            </div>
+            <div class="matrix-cell matrix-cell--warn">
+                <span>FP</span>
+                <strong>{{ confusion.get('false_positive', 0) }}</strong>
+            </div>
+            <div class="matrix-cell matrix-cell--warn">
+                <span>FN</span>
+                <strong>{{ confusion.get('false_negative', 0) }}</strong>
+            </div>
+            <div class="matrix-cell matrix-cell--good">
+                <span>TP</span>
+                <strong>{{ confusion.get('true_positive', 0) }}</strong>
+            </div>
+        </div>
+        {% else %}
+        <p>Матрица ошибок появится после обучения модели.</p>
+        {% endif %}
+    </article>
+</section>
+
+<section class="grid-layout">
+    <article class="card">
+        <h2>Наиболее значимые признаки</h2>
+        <div class="importance-list">
+            {% for item in feature_importances %}
+            <div class="importance-row">
+                <span>{{ item.feature }}</span>
+                <div class="importance-row__bar">
+                    <span style="width: {{ (item.value * 100)|round(1) }}%"></span>
+                </div>
+                <strong>{{ "%.3f"|format(item.value) }}</strong>
+            </div>
+            {% else %}
+            <p>Список признаков будет доступен после обучения модели.</p>
+            {% endfor %}
+        </div>
+    </article>
+
+    <article class="card">
+        <h2>Топ клиентов по риску</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Клиент</th>
+                        <th>Статус</th>
+                        <th>Риск</th>
+                        <th>Вероятность</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for client in top_clients %}
+                    <tr>
+                        <td>
+                            <a class="table-link" href="{{ url_for('main.client_detail', client_id=client.id) }}">
+                                {{ client.full_name }}
+                            </a>
+                        </td>
+                        <td>{{ client.status }}</td>
+                        <td>{{ client.risk_level or "Не рассчитан" }}</td>
+                        <td>{{ "%.1f"|format((client.churn_probability or 0) * 100) }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if latest_run %}
+        <p class="note">Последний запуск прогноза: {{ latest_run.created_at.strftime('%d.%m.%Y %H:%M') }}</p>
+        {% endif %}
+    </article>
+</section>
+
+<section class="grid-layout">
+    <article class="card">
+        <h2>Статусы CRM-клиентов</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Статус</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for status, count in status_counts.items() %}
+                    <tr>
+                        <td>{{ status }}</td>
+                        <td>{{ count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
+
+    <article class="card">
+        <h2>География клиентов</h2>
+        <div class="table-wrap">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Город</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for city, count in city_counts.items() %}
+                    <tr>
+                        <td>{{ city }}</td>
+                        <td>{{ count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </article>
 </section>
 {% endblock %}
