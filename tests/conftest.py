@@ -9,6 +9,7 @@ if str(PROJECT_ROOT) not in sys.path:
 
 from app.__init__ import create_app
 from app.extensions import db
+from app.ml import ensure_demo_assets_registered
 from app.seeds import seed_clients_data, seed_roles_and_users
 
 
@@ -24,6 +25,7 @@ def app():
     with app.app_context():
         db.drop_all()
         db.create_all()
+        ensure_demo_assets_registered()
         seed_roles_and_users()
         seed_clients_data()
 
