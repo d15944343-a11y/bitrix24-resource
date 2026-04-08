@@ -1,9 +1,12 @@
+from __future__ import annotations
+
 from flask import Flask, render_template
 
 from config import Config
 from .auth import load_current_user
 from .db_setup import ensure_database_schema, migrate_plaintext_passwords
 from .extensions import db
+from .ml import ensure_demo_assets_registered
 from .seeds import seed_clients_data, seed_roles_and_users
 
 
@@ -27,6 +30,7 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     with app.app_context():
         ensure_database_schema()
         migrate_plaintext_passwords()
+        ensure_demo_assets_registered()
 
     @app.errorhandler(403)
     def forbidden(error):
@@ -44,7 +48,7 @@ def create_app(config_overrides: dict | None = None) -> Flask:
     def init_db() -> None:
         with app.app_context():
             ensure_database_schema()
-        print("База данных инициализирована.")
+        print("База данных и служебные таблицы инициализированы.")
 
     @app.cli.command("seed-users")
     def seed_users() -> None:
@@ -58,6 +62,6 @@ def create_app(config_overrides: dict | None = None) -> Flask:
         with app.app_context():
             ensure_database_schema()
             seed_clients_data()
-        print("Демонстрационные клиенты добавлены.")
+        print("CRM-клиенты для демонстрации интеллектуального сервиса добавлены.")
 
     return app

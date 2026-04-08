@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from sqlalchemy import inspect, text
 from werkzeug.security import generate_password_hash
 
@@ -6,6 +8,24 @@ from .models import User
 
 
 HASH_PREFIXES = ("pbkdf2:", "scrypt:")
+
+SQLITE_CLIENT_COLUMNS = {
+    "customer_code": "VARCHAR(40) NOT NULL DEFAULT ''",
+    "senior_citizen": "BOOLEAN NOT NULL DEFAULT 0",
+    "tenure_months": "INTEGER NOT NULL DEFAULT 0",
+    "monthly_charges": "FLOAT NOT NULL DEFAULT 0",
+    "total_charges": "FLOAT NOT NULL DEFAULT 0",
+    "service_count": "INTEGER NOT NULL DEFAULT 0",
+    "contract_type": "VARCHAR(40) NOT NULL DEFAULT 'Month-to-month'",
+    "payment_method": "VARCHAR(80) NOT NULL DEFAULT 'Electronic check'",
+    "internet_service": "VARCHAR(40) NOT NULL DEFAULT 'DSL'",
+    "paperless_billing": "BOOLEAN NOT NULL DEFAULT 0",
+    "has_family_plan": "BOOLEAN NOT NULL DEFAULT 0",
+    "has_tech_support": "BOOLEAN NOT NULL DEFAULT 0",
+    "churn_probability": "FLOAT",
+    "churn_prediction": "VARCHAR(40)",
+    "risk_level": "VARCHAR(20)",
+}
 
 
 def ensure_database_schema() -> None:
@@ -27,6 +47,22 @@ def ensure_database_schema() -> None:
                         "ADD COLUMN status VARCHAR(50) NOT NULL DEFAULT 'Новое'"
                     )
                 )
+
+    if inspector.has_table("clients"):
+        existing_columns = {column["name"] for column in inspector.get_columns("clients")}
+        with engine.begin() as connection:
+            for column_name, definition in SQLITE_CLIENT_COLUMNS.items():
+                if column_name in existing_columns:
+                    continue
+                connection.execute(text(f"ALTER TABLE clients ADD COLUMN {column_name} {definition}"))
+
+            connection.execute(
+                text(
+                    "UPDATE clients "
+                    "SET customer_code = 'CLIENT-' || id "
+                    "WHERE customer_code IS NULL OR customer_code = ''"
+                )
+            )
 
 
 def migrate_plaintext_passwords() -> None:
